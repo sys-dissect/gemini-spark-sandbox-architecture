@@ -1,0 +1,19 @@
+[
+  "/proc/sys/kernel/overflowgid",
+  "/proc/sys/kernel/pid_max",
+  "/proc/sys/kernel/randomize_va_space",
+  "/proc/sys/kernel/sem",
+  "/proc/sys/kernel/shmmax",
+  "/proc/sys/kernel/shmmni",
+  "/proc/sys/kernel/cap_last_cap",
+  "/proc/sys/kernel/ostype",
+  "/proc/sys/kernel/hostname",
+  "/proc/sys/kernel/domainname",
+  "/proc/sys/kernel/overflowuid",
+  "/proc/sys/kernel/msgmax",
+  "/proc/sys/kernel/shmall",
+  "/proc/sys/kernel/msgmni",
+  "/proc/sys/kernel/msgmnb",
+  "/proc/sys/kernel/osrelease",
+  "/proc/sys/kernel/version"
+]

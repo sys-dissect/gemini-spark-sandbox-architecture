@@ -185,11 +185,15 @@ Inspection of `/proc/self/mountinfo` ([`evidence/mountinfo-procfs.json`](evidenc
 * **Ephemeral Root (`/`)**: Mounted as `overlayfs`. Writes to `/tmp`, `/var`, or root directories reside in volatile memory and vanish upon container recycling.
 * **Persistent Gofer Mounts**:
   * `/working_dir` (`rfdno=5,wfdno=5`)
+  * `/ipc` (`rfdno=6,wfdno=6`)
   * `/home/spark` (`rfdno=7,wfdno=7`)
   * `/usr/local` (`rfdno=8,wfdno=8`)
   * `/mnt/agentdata` (`rfdno=9,wfdno=9`)
-  * `/ipc` (`rfdno=6,wfdno=6`)
+  * `/etc/resolv.conf` (`rfdno=10,wfdno=10`) — Network resolver injected directly from host FD.
+  * `/etc/hostname` (`rfdno=11,wfdno=11`) — Container hostname injected directly from host FD.
+  * `/etc/hosts` (`rfdno=12,wfdno=12`) — Host mapping injected directly from host FD.
   All mounted via Plan 9 (`9p`, `v9fs`) using `trans=fd`, `cache=remote_revalidating`, and `directfs`.
+  *(See complete descriptor mapping: [`evidence/9p_mount_fd_map.json`](evidence/9p_mount_fd_map.json))*
 * **FUSE Mounts**:
   * `/run/user/1235/memory` and `/working_dir/memory` (`fd=3`, `user_id=1235`, `group_id=1235`).
 
@@ -357,4 +361,64 @@ Earlier probing identified that `$HOME` is explicitly configured as `/working_di
    ```
 
 When the virtual desktop terminal initializes under TigerVNC as user `spark`, it reads its dotfiles from `/home/spark` and immediately transitions working directory context to `/working_dir`.
+
+---
+
+## 1.14 The Sudo Myth & Build Provenance (Resolving Open Question #3)
+
+**[Tier 1: Directly Observed]**
+
+Probing the APT repository configuration provides empirical closure on why passwordless sudo is granted for package management inside an air-gapped container:
+
+* **Deb822 Sources Pinned to Snapshot**:
+  Inspection of `/etc/apt/sources.list.d/debian.sources` ([`evidence/debian_sources_deb822.txt`](evidence/debian_sources_deb822.txt)) reveals the image build freeze date:
+  ```deb822
+  Types: deb
+  # http://snapshot.debian.org/archive/debian/20260918T000000Z
+  URIs: http://deb.debian.org/debian
+  Suites: bookworm bookworm-updates
+  Components: main
+  ```
+  Both main and security suites are pinned to the Debian snapshot timestamp **`20260918T000000Z` (September 18, 2026)**.
+* **Absence of Internal Package Registries**:
+  No Google-internal artifact registries, private proxy endpoints, or cached packages (`/var/cache/apt/archives` is empty) exist on disk.
+
+### Architectural Rationale [Tier 2: Architectural Inference]
+The passwordless `sudo` grant for `apt-get`, `apt`, and `dpkg` was not engineered for live in-guest package downloads. Rather, it is a development/build-phase template artifact inherited from Google's base container recipe (where package provisioning occurs during image construction). When deployed into the production Spark runtime with a zero-route network namespace, outbound apt requests fail immediately at the socket layer (`ENETUNREACH`), rendering the privilege functionally inert for remote package installation.
+
+---
+
+## 1.15 gVisor Sentry Sysctl Emulation Catalog
+
+**[Tier 1: Directly Observed]**
+
+Probing `/proc/sys/kernel/` demonstrates that gVisor Sentry emulates an extremely constrained, selective subset of kernel sysctl parameters ([`evidence/gvisor_sysctl_census.json`](evidence/gvisor_sysctl_census.json)). Exactly **17 nodes** are active:
+
+| Category | Emulated Sysctl Nodes | Architectural Role |
+| :--- | :--- | :--- |
+| **System V IPC** | `sem`, `shmmax`, `shmall`, `shmmni`, `msgmax`, `msgmni`, `msgmnb` | Virtualized in Go memory for POSIX/SysV compatibility. |
+| **Identity & OS** | `ostype`, `osrelease`, `version`, `hostname`, `domainname` | Returns virtualized Linux 4.19 strings. |
+| **User/Group Mapping**| `overflowuid`, `overflowgid` | Standard Linux UID overflow emulation. |
+| **Security & Limits** | `pid_max` (65536), `randomize_va_space`, `cap_last_cap` | Memory space layout and capability caps. |
+
+**Completely Unimplemented Sysctls**:
+* Crash Dump Patterns: `/proc/sys/kernel/core_pattern` does not exist (`ENOENT`).
+* Scheduler Tuning: `sched_*` parameters do not exist (`ENOENT`).
+* Thread Caps: `/proc/sys/kernel/threads-max` does not exist (`ENOENT`).
+* Kernel Debugging: `sysrq`, `hung_task_*`, and `yama/*` are entirely unmapped.
+
+---
+
+## 1.16 Virtual Clock Resolution vs. Go Scheduler Quantization
+
+**[Tier 1: Directly Observed]**
+
+* **API-Level Resolution (`clock_getres`)**:
+  Querying POSIX clocks via `libc.clock_getres` returns **1 nanosecond** (`tv_nsec: 1`) across `CLOCK_REALTIME`, `CLOCK_MONOTONIC`, and `CLOCK_BOOTTIME`.
+* **Empirical Sleep Precision (`nanosleep`)**:
+  Requesting a 500 μs sleep (`nanosleep` with `tv_nsec = 500,000`) completes in **1,392.88 μs (~1.39 ms)**.
+
+### Architectural Finding [Tier 2: Architectural Inference]
+While Sentry accurately populates standard Linux high-resolution timer data structures to user-space applications, guest sleep timers and scheduling wakeups are bound to the underlying Go runtime scheduler and host kernel dispatch ticks. This establishes an effective **~1.0 to 1.4 ms scheduling quantization floor** for fine-grained timing operations.
+
 

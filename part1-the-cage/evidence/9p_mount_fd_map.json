@@ -1,0 +1,73 @@
+[
+  {
+    "target": "/",
+    "fstype": "overlay",
+    "options": "rw,relatime"
+  },
+  {
+    "target": "/working_dir",
+    "fstype": "9p",
+    "rfdno": 5,
+    "wfdno": 5,
+    "options": "rw,trans=fd,rfdno=5,wfdno=5,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_file_handle_sharing,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/ipc",
+    "fstype": "9p",
+    "rfdno": 6,
+    "wfdno": 6,
+    "options": "rw,trans=fd,rfdno=6,wfdno=6,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/home/spark",
+    "fstype": "9p",
+    "rfdno": 7,
+    "wfdno": 7,
+    "options": "rw,trans=fd,rfdno=7,wfdno=7,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/usr/local",
+    "fstype": "9p",
+    "rfdno": 8,
+    "wfdno": 8,
+    "options": "rw,trans=fd,rfdno=8,wfdno=8,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/mnt/agentdata",
+    "fstype": "9p",
+    "rfdno": 9,
+    "wfdno": 9,
+    "options": "rw,trans=fd,rfdno=9,wfdno=9,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/etc/resolv.conf",
+    "fstype": "9p",
+    "rfdno": 10,
+    "wfdno": 10,
+    "options": "rw,trans=fd,rfdno=10,wfdno=10,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/etc/hostname",
+    "fstype": "9p",
+    "rfdno": 11,
+    "wfdno": 11,
+    "options": "rw,trans=fd,rfdno=11,wfdno=11,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/etc/hosts",
+    "fstype": "9p",
+    "rfdno": 12,
+    "wfdno": 12,
+    "options": "rw,trans=fd,rfdno=12,wfdno=12,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "target": "/run/user/1235/memory",
+    "fstype": "fuse",
+    "options": "rw,nosuid,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235"
+  },
+  {
+    "target": "/working_dir/memory",
+    "fstype": "fuse",
+    "options": "rw,nosuid,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235"
+  }
+]
