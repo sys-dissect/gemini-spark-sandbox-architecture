@@ -221,6 +221,14 @@ All measurements were performed via non-invasive, in-situ systems diagnostics fr
 
 **sys-dissect** is an independent systems research initiative dedicated to the empirical dissection, boundary verification, and containment analysis of production AI runtimes and autonomous agent infrastructure.
 
+### Focus Topics
+
+* **Micro-VM & Sandbox Containment**: gVisor Sentry system call interception, seccomp filters, capability bitmask auditing, and Linux namespace isolation.
+* **Storage & Virtual Filesystem Bridges**: 9P Gofer descriptor mediation, cross-tier latency benchmarks, and user-space FUSE daemons (`mfs`).
+* **Agent Supervisory Machinery**: Process tree architecture (PID 1 FastAPI/Uvicorn), Unix domain socket transports, and out-of-band command actuation.
+* **Multimodal Visual & Desktop Subsystems**: Virtual display infrastructure (TigerVNC RFB 3.8, X11 MIT-SHM), zero-WM kiosk geometries, and synthetic input injection (`xdotool`).
+* **Runtime Packaging & Artifact Provenance**: Hermetic build fingerprints, Debian snapshot pinning, and cross-persona extension telemetry.
+
 ### Research Principles
 
 * **Measure Runtime Realities:** Architecture blueprints and design disclosures present intended models; empirical probing verifies actual kernel filters, hypervisor mediation, and storage behavior.
