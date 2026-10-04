@@ -183,6 +183,7 @@ During the investigation, several initial observations were challenged, refined,
 │       ├── openapi-schema.json          # Live canonical OpenAPI 3.0.2 schema from shell.sock
 │       ├── proc_net_unix.txt            # Active Unix domain socket table with inodes
 │       ├── worker_bin_telemetry.txt     # Extracted WebSocket strings and APC schemas
+│       ├── vnc_visual_telemetry.json    # TigerVNC flags, window hierarchy & framebuffer metrics
 │       └── x11_mit_shm_telemetry.txt    # X11 MIT-SHM extension and XKB rules probe
 └── part3-the-mind/                      # Track 3: Cognitive Engine & Memory FUSE
     ├── README.md                        # Jetski Memory FUSE (mfs), Dumbo proxy & Dreaming loops

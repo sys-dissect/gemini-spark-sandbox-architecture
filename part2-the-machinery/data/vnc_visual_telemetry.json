@@ -1,0 +1,37 @@
+{
+  "vnc_process": {
+    "command": "/usr/bin/Xtigervnc :1 -SecurityTypes None -geometry 2560x1440 -FrameRate 30 -AlwaysShared -SendPrimary=0 -SetPrimary=0 -localhost=0",
+    "security_types": "None",
+    "bind_address": "0.0.0.0:5901 (localhost=0)",
+    "sharing": "AlwaysShared",
+    "framerate": 30
+  },
+  "x11_window_tree": {
+    "root_window_id": "0x51a",
+    "window_manager": "None (unmanaged kiosk)",
+    "children": [
+      {
+        "id": "0x200005",
+        "title": "tmux",
+        "class": ["st-256color", "st-256color"],
+        "geometry": "2244x1280+60+50",
+        "relative_position": "+60+50"
+      }
+    ]
+  },
+  "terminal_state": {
+    "tmux_session": "main (attached)",
+    "active_pane_text": "spark@spark:/working_dir$",
+    "user": "spark",
+    "cwd": "/working_dir"
+  },
+  "framebuffer_capture": {
+    "capture_tool": "ffmpeg x11grab (v5.1.9-0+deb12u1)",
+    "format": "PNG",
+    "resolution": [2560, 1440],
+    "mode": "RGB",
+    "size_bytes": 15389,
+    "mean_luminance": 0.08644205729166667,
+    "unique_colors": 488
+  }
+}

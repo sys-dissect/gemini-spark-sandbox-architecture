@@ -253,21 +253,48 @@ PYTHONPATH=/opt/spark/lib/python3/dist-packages:/opt/spark/lib/python3.11/dist-p
 
 **[Tier 1: Directly Observed]**
 
-The sandbox is configured with a specialized headless X11 graphical display environment tailored for programmatic interaction rather than human desktop usage:
+The sandbox is configured with a specialized headless X11 graphical display environment tailored for programmatic interaction and synthetic document synthesis rather than human desktop usage ([`data/vnc_visual_telemetry.json`](data/vnc_visual_telemetry.json)):
 
-* **Virtual Display**: PID 8 executes `Xtigervnc :1 -geometry 2560x1440 -depth 24 -rfbport 5901 -FrameRate 30`.
+* **Virtual Display Daemon (TigerVNC)**:
+  * Runtime commandline extracted from `/proc/8/cmdline`:
+    ```text
+    /usr/bin/Xtigervnc :1 -SecurityTypes None -geometry 2560x1440 -FrameRate 30 -AlwaysShared -SendPrimary=0 -SetPrimary=0 -localhost=0
+    ```
+  * **Unauthenticated Access (`-SecurityTypes None`)**: Disables RFB authentication passwords entirely.
+  * **All-Interface Binding (`-localhost=0`)**: The server does not bind exclusively to `127.0.0.1`, but listens across `0.0.0.0:5901`.
+  * **Client Persistence (`-AlwaysShared`)**: Allows concurrent VNC viewers or automated scraper connections without disconnecting existing sessions.
+  * **Clipboard Decoupling (`-SendPrimary=0 -SetPrimary=0`)**: Prevents X11 primary selection changes from thrashing the host or client clipboard.
 * **Zero Window Manager Architecture (Headless Kiosk)**:
-  * Probing root atoms via `xprop -root _NET_SUPPORTED` and `_NET_WM_NAME` returns **no such atom**.
-  * `xlsclients -l` confirms zero window manager clients are registered.
-  * There is **no Window Manager** (e.g. Openbox, Fluxbox, or Metacity). `stterm` is mapped directly as an unmanaged child window of the root window (`0x51a`) positioned at `2244x1280+60+50`. This completely eliminates reparenting, focus stealing, and window frame rendering overhead.
+  * Empirical query via `xwininfo -root -tree` confirms an unmanaged single-child kiosk geometry:
+    ```text
+    xwininfo: Window id: 0x51a (the root window) (has no name)
+      Root window id: 0x51a (the root window) (has no name)
+      Parent window id: 0x0 (none)
+         1 child:
+         0x200005 "tmux": ("st-256color" "st-256color")  2244x1280+60+50  +60+50
+    ```
+  * Root properties (`xprop -root _NET_SUPPORTED`, `_NET_WM_NAME`) confirm **no Window Manager** (e.g. Openbox, Fluxbox) is loaded. `stterm` (`0x200005`) is mapped directly as an unmanaged child window of root window `0x51a`, eliminating reparenting, window decorations, and focus-stealing overhead.
+* **Attached Virtual Terminal Buffer**:
+  * Tmux multiplexer audit (`tmux list-sessions`) reveals session `main: 1 windows (created Sun Oct 4 12:44:12 2026) (attached)`.
+  * Screen buffer extraction (`tmux capture-pane -p -t main`) confirms the virtual desktop terminal displays:
+    ```text
+    spark@spark:/working_dir$
+    ```
+  * Demonstrates that the virtual desktop is provisioned with a warm, attached interactive shell sitting in the default working directory.
+* **Live Framebuffer Grab & Chromatic Analysis**:
+  * Empirical capture using `ffmpeg -f x11grab -video_size 2560x1440 -i :1.0 -vframes 1 /tmp/vnc_frame.png` succeeded cleanly (`exit_code: 0`, 15,389 bytes).
+  * High-resolution frame statistics:
+    * **Resolution**: `2560x1440` (24-bit RGB, progressive).
+    * **Mean Luminance**: `0.0864` (91.36% dark/black background, characteristic of full-screen terminal sessions).
+    * **Unique Color Count**: `488` distinct RGB values (representing subpixel anti-aliasing and font glyph rasterization from the FreeType/HarfBuzz stack).
 * **X11 Extensions & MIT-SHM Telemetry** ([`data/x11_mit_shm_telemetry.txt`](data/x11_mit_shm_telemetry.txt)):
-  * Probing `xdpyinfo -ext MIT-SHM` confirms that the **MIT-SHM shared memory extension is supported and active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
-  * Combined with the 64 MB `/dev/shm` tmpfs ceiling, this enables zero-copy shared memory frame grabbing directly from the TigerVNC framebuffer.
+  * `xdpyinfo -ext MIT-SHM` confirms **MIT-SHM shared memory extension is active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
+  * Combined with the 64 MB `/dev/shm` tmpfs allocation, this enables zero-copy shared memory frame grabbing directly from the TigerVNC framebuffer.
   * Root properties (`xprop -root`): Initialized with standard evdev rules `_XKB_RULES_NAMES = "evdev", "pc105", "us", "", ""`.
-* **Screen Capture & Automation**:
-  * `ffmpeg` is compiled with native `x11grab` support enabled.
-  * `xdotool` is installed for synthetic keyboard typing, mouse navigation, and window resizing against `DISPLAY=:1`.
-  * `xclip` is integrated with tmux copy-paste buffers (`xclip -selection clipboard -i / -o`).
+* **Screen Automation & Automation Toolchain**:
+  * `ffmpeg` compiled with native `x11grab` support.
+  * `xdotool` installed for synthetic keystroke injection, pointer navigation, and window resizing on `DISPLAY=:1`.
+  * `xclip` integrated with tmux copy-paste buffers (`xclip -selection clipboard -i / -o`).
 * **Typography Stack**:
   * **314 font entries** registered in `fc-list`.
   * Comprehensive East Asian typographic support via **Noto Sans CJK** and **Noto Serif CJK** across Regular and Bold weights (covering Hong Kong, Japan, Korea, Simplified Chinese, and Traditional Chinese).
