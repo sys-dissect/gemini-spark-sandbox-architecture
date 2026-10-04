@@ -162,6 +162,13 @@ File presence auditing established:
 ### Package & Binary Census
 * **Debian Packages (`dpkg -l`)**: Exactly **1,309** installed packages.
 * **Python Packages (`pip list`)**: Exactly **151** packages installed in `/opt/spark/local/lib/python3.11/dist-packages` (including `numpy 2.1.3`, `scipy 1.15.2`, `pandas 2.2.3`, `onnxruntime 1.30.0`, `ortools 9.14.6206`, `sympy 1.13.3`, `fastapi 0.92.0`, `uvicorn 0.17.6`).
+* **Node.js Environment**:
+  * Node.js: `v18.20.4`
+  * npm: `9.2.0`
+  * Module Path: `NODE_PATH=/usr/local/lib/node_modules:/opt/spark/lib/node_modules:/opt/spark/node_modules`
+  * Global Pre-installed Bundles (`/opt/spark/lib/node_modules`):
+    * `pptxgenjs` (Office Open XML PowerPoint generation)
+    * `sharp` (High-performance libvips image processing)
 * **Binary Distribution**:
   * `/bin` & `/usr/bin`: 1,090 binaries
   * `/sbin` & `/usr/sbin`: 174 binaries
@@ -205,12 +212,39 @@ The sandbox is configured with a fully functional X11 graphical display environm
      1 child:
      0x200005 "tmux": ("st-256color" "st-256color")  2244x1280+60+50  +60+50
   ```
+* **X11 Extensions & MIT-SHM Telemetry** ([`data/x11_mit_shm_telemetry.txt`](data/x11_mit_shm_telemetry.txt)):
+  * Probing `xdpyinfo -ext MIT-SHM` confirms that **MIT-SHM shared memory extension is supported and active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
+  * Display attributes: `2560x1440` pixels @ 96 DPI, 24 planes TrueColor/DirectColor.
+  * Root properties (`xprop -root`): Initialized with standard evdev rules `_XKB_RULES_NAMES = "evdev", "pc105", "us", "", ""`.
 * **Screen Capture & Automation**:
   * `ffmpeg` is compiled with native `x11grab` support enabled.
   * `xdotool` is installed for synthetic keyboard typing, mouse navigation, and window resizing against `DISPLAY=:1`.
-  * `xclip` is installed for X11 clipboard integration.
+  * `xclip` is integrated with tmux copy-paste buffers (`xclip -selection clipboard -i / -o`).
 * **Typography Stack**:
   * **314 font entries** registered in `fc-list`.
   * Comprehensive East Asian typographic support via **Noto Sans CJK** and **Noto Serif CJK** across Regular and Bold weights (covering Hong Kong, Japan, Korea, Simplified Chinese, and Traditional Chinese).
   * Color emoji and monospace coverage via `NotoColorEmoji.ttf` and `NotoMono-Regular.ttf`.
   * Full vector rendering stack: `libcairo2`, `python3-cairo`, `libpango-1.0-0`, `libpangocairo-1.0-0`, `libharfbuzz0b`, and `libfreetype6`.
+
+---
+
+## 2.8 File Descriptors & Sentry Seek Tracking
+
+**[Tier 1: Directly Observed]**
+
+Inspection of guest process file descriptors and fdinfo ([`data/fdinfo_9p_probe.txt`](data/fdinfo_9p_probe.txt)):
+
+### Worker Descriptors (`/proc/self/fd`)
+* `0 -> host:[1]`: Standard input translated from host gVisor FD mapping.
+* `1 -> pipe:[165]`: Stdout captured by the FastAPI supervisor selector.
+* `2 -> pipe:[165]`: Stderr captured by the FastAPI supervisor selector.
+
+### 9P Seek Tracking (`/proc/self/fdinfo/<fd>`)
+Reading `fdinfo` for an open file handle on the 9P-backed `/working_dir` mount:
+```text
+pos:    0
+flags:  02100000
+mnt_id: 29
+```
+* **Architectural Significance**: Confirms that gVisor Sentry maintains and updates file seek positions (`pos`) and mount associations (`mnt_id: 29`) directly in user-space Go memory across host 9P file descriptors.
+

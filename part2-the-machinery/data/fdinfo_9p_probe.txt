@@ -1,0 +1,23 @@
+=== Worker File Descriptor Telemetry ===
+Process: Python worker child (/proc/self/fd)
+
+Descriptors:
+0 -> host:[1] (Inherited host input)
+1 -> pipe:[165] (Non-blocking selector pipe)
+2 -> pipe:[165] (Non-blocking selector pipe)
+
+=== 9P File Descriptor Seek Tracking (/proc/self/fdinfo) ===
+Target: Open handle on /working_dir
+pos:    0
+flags:  02100000
+mnt_id: 29
+
+System V IPC Allocation (ipcs -a):
+------ Message Queues --------
+key        msqid      owner      perms      used-bytes   messages    
+
+------ Shared Memory Segments --------
+key        shmid      owner      perms      bytes      nattch     status      
+
+------ Semaphore Arrays --------
+key        semid      owner      perms      nsems     

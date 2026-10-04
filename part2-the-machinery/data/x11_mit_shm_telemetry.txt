@@ -1,0 +1,14 @@
+=== X11 TigerVNC Capabilities & MIT-SHM Probe ===
+Display: :1 (Xtigervnc)
+Resolution: 2560x1440 @ 96 DPI, 24 planes TrueColor/DirectColor
+
+MIT-SHM Extension Probe (xdpyinfo -ext MIT-SHM):
+MIT-SHM:
+  version: 1.2
+  opcode: 131
+  base event: 68
+  base error: 128
+  shared pixmaps: yes, format: 2
+
+Root Window Properties (xprop -root):
+_XKB_RULES_NAMES(STRING) = "evdev", "pc105", "us", "", ""
