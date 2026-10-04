@@ -1,0 +1,27 @@
+=== worker_bin.js Dissection Telemetry ===
+File: /opt/chrome_extensions/dynamo/worker_bin.js
+Size: ~4.5 MB
+Build Path: //blaze-out/k8-fastbuild/bin/assistant/boq/lamda/agents/dynamo/extension/worker_bin.jstrimmer_bootstrap.js
+
+Identified Components:
+1. Log Prefix: "Service Worker (APC Extension):"
+2. Annotated Page Content Schemas:
+   - MutableAnnotatedPageContent.proto
+   - MutableAXTreeUpdate.proto
+   - MutableAXNodeData.proto
+   - MutableAXRelativeBounds.proto
+   - .chrome.intelligence.modeling.features.forms_ai.proto
+
+3. WebSocket Connectivity:
+   - Endpoint: ws://localhost:8080/ws/register_worker
+   - Log string: "WebSocket connection established with Selenium server"
+
+4. WebRequest Interceptors:
+   - chrome.webRequest.onSendHeaders (<all_urls>)
+   - chrome.webRequest.onHeadersReceived (<all_urls>)
+
+5. Shared Image Calibration:
+   - /opt/chrome_extensions/dynamo/: PRESENT
+   - /usr/bin/entrypoint_browser.sh: PRESENT
+   - /usr/bin/dynamo_browser_wrapper.py: ABSENT
+   - /usr/local/share/ca-certificates/agent-gateway-ca.crt: ABSENT

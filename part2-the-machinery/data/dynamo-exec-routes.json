@@ -1,0 +1,45 @@
+[
+  {
+    "path": "/execute_bash",
+    "method": "POST",
+    "summary": "Executes arbitrary bash commands as UID 1235 (spark)",
+    "request_body": {
+      "command": "string"
+    },
+    "responses": {
+      "200": {
+        "description": "Command execution stdout/stderr text and returncode"
+      }
+    }
+  },
+  {
+    "path": "/execute_python",
+    "method": "POST",
+    "summary": "Executes Python code in-memory within stateful _PYTHON_EXEC_SCOPE",
+    "request_body": {
+      "code": "string"
+    },
+    "responses": {
+      "200": {
+        "description": "Output string, return value, or formatted exception traceback"
+      }
+    }
+  },
+  {
+    "path": "/save_file",
+    "method": "POST",
+    "summary": "Decodes base64 content and writes to resolved file path in /working_dir",
+    "request_body": {
+      "file_path": "string",
+      "content": "string (base64)"
+    }
+  },
+  {
+    "path": "/fetch_file",
+    "method": "POST",
+    "summary": "Reads file from resolved path and returns base64 encoded payload",
+    "request_body": {
+      "file_path": "string"
+    }
+  }
+]

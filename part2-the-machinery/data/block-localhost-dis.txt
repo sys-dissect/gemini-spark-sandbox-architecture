@@ -1,0 +1,67 @@
+322           0 RETURN_GENERATOR
+              2 POP_TOP
+              4 RESUME                   0
+
+334           6 LOAD_FAST                0 (request)
+              8 LOAD_ATTR                0 (client)
+             18 POP_JUMP_FORWARD_IF_FALSE   123 (to 266)
+
+335          20 LOAD_FAST                0 (request)
+             22 LOAD_ATTR                0 (client)
+             32 LOAD_ATTR                1 (host)
+             42 LOAD_CONST               1 ('localhost')
+             44 COMPARE_OP               2 (==)
+             50 POP_JUMP_FORWARD_IF_TRUE    32 (to 116)
+
+336          52 LOAD_FAST                0 (request)
+             54 LOAD_ATTR                0 (client)
+             64 LOAD_ATTR                1 (host)
+             74 LOAD_CONST               2 ('127.0.0.1')
+             76 COMPARE_OP               2 (==)
+             82 POP_JUMP_FORWARD_IF_TRUE    16 (to 116)
+
+337          84 LOAD_FAST                0 (request)
+             86 LOAD_ATTR                0 (client)
+             96 LOAD_ATTR                1 (host)
+            106 LOAD_CONST               3 ('0.0.0.0')
+            108 COMPARE_OP               2 (==)
+            114 POP_JUMP_FORWARD_IF_FALSE    75 (to 266)
+
+339     >>  116 LOAD_GLOBAL              5 (NULL + logging)
+            128 LOAD_ATTR                3 (warning)
+340         138 LOAD_CONST               4 ('Blocking request from %s to %s')
+341         140 LOAD_FAST                0 (request)
+            142 LOAD_ATTR                1 (host)
+            152 LOAD_ATTR                1 (host)
+342         162 LOAD_FAST                0 (request)
+            164 LOAD_ATTR                4 (url)
+            174 LOAD_ATTR                5 (path)
+339         184 PRECALL                  3
+            188 CALL                     3
+            198 POP_TOP
+
+344         200 LOAD_GLOBAL             12 (fastapi)
+            212 LOAD_ATTR                7 (responses)
+            222 LOAD_METHOD              8 (Response)
+345         244 LOAD_CONST               5 ('Access from localhost is forbidden.')
+346         246 LOAD_CONST               6 (403)
+344         248 KW_NAMES                 7
+            250 PRECALL                  2
+            254 CALL                     2
+            264 RETURN_VALUE
+
+349     >>  266 PUSH_NULL
+            268 LOAD_FAST                1 (call_next)
+            270 LOAD_FAST                0 (request)
+            272 PRECALL                  1
+            276 CALL                     1
+            286 GET_AWAITABLE            0
+            288 LOAD_CONST               8 (None)
+        >>  290 SEND                     3 (to 298)
+            292 YIELD_VALUE
+            294 RESUME                   3
+            296 JUMP_BACKWARD_NO_INTERRUPT     4 (to 290)
+        >>  298 STORE_FAST               2 (response)
+
+350         300 LOAD_FAST                2 (response)
+            302 RETURN_VALUE

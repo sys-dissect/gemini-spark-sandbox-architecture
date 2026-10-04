@@ -1,0 +1,19 @@
+{
+  "DEBIAN_FRONTEND": "noninteractive",
+  "DYNAMO_EXTENSION_UNPACKED_PATH": "/opt/chrome_extensions/dynamo",
+  "DYNAMO_EXTENSION_ZIP_FILENAME": "dynamo.zip",
+  "DYNAMO_SUBFOLDER_NAME": "dynamo",
+  "EXTENSIONS_BASE_DIR": "/opt/chrome_extensions",
+  "HOME": "/working_dir",
+  "HOSTNAME": "<sandbox_container_id>",
+  "LC_CTYPE": "C.UTF-8",
+  "MFS_RUNTIME_DIR": "/run/user/1235",
+  "NODE_PATH": "/usr/local/lib/node_modules:/opt/spark/lib/node_modules:/opt/spark/node_modules",
+  "OLDPWD": "/working_dir",
+  "PATH": "/usr/local/bin:/opt/spark/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+  "PIP_BREAK_SYSTEM_PACKAGES": "1",
+  "PWD": "/tmp",
+  "PYTHONPATH": "/opt/spark/lib/python3/dist-packages:/opt/spark/lib/python3.11/dist-packages:/opt/spark/lib/python3.11/site-packages:/opt/spark/local/lib/python3.11/dist-packages:/opt/spark/local/lib/python3.11/site-packages",
+  "SHLVL": "0",
+  "_": "/usr/bin/python3"
+}
