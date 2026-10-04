@@ -291,9 +291,30 @@ The sandbox is configured with a specialized headless X11 graphical display envi
   * `xdpyinfo -ext MIT-SHM` confirms **MIT-SHM shared memory extension is active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
   * Combined with the 64 MB `/dev/shm` tmpfs allocation, this enables zero-copy shared memory frame grabbing directly from the TigerVNC framebuffer.
   * Root properties (`xprop -root`): Initialized with standard evdev rules `_XKB_RULES_NAMES = "evdev", "pc105", "us", "", ""`.
-* **Screen Automation & Automation Toolchain**:
+* **Screen Automation & Out-of-Band Keystroke Injection ([`data/x11_rfb_synthetic_input.json`](data/x11_rfb_synthetic_input.json))**:
+  * **Dual Command Execution Planes**: Command execution in the sandbox is not restricted to the HTTP supervisor (`/tmp/shell.sock`). Synthetic keyboard events injected via `xdotool type` and `xdotool key Return` on `DISPLAY=:1` are routed directly into the warm `stterm` window attached to `tmux`.
+  * **Empirical Execution Verification**:
+    ```text
+    spark@spark:/working_dir$ echo 'KEYSTROKE_INJECTION_CONFIRMED' > /tmp/x11_keystroke_probe.txt
+    spark@spark:/working_dir$
+    ```
+    * The command was processed and executed by the interactive bash subshell under user `spark`, writing the target file without touching `/tmp/shell.sock`.
+    * This establishes an independent, out-of-band actuation vector suitable for interactive terminal automation or computer-use agent drivers.
+* **Wire-Level RFB 3.8 Protocol Handshake**:
+  * Direct socket connection to `127.0.0.1:5901` confirms the raw RFB daemon banner:
+    ```text
+    RFB 003.008
+    ```
+  * Following protocol negotiation, TigerVNC advertises exactly one security type (`security_types_count: 1`):
+    ```text
+    Type 1: None (unauthenticated)
+    ```
+  * Confirms wire-level proof that RFB clients can attach, receive frame updates, and inject pointer/keyboard events without authentication.
+* **Browser Automation Stack (`chromium`)**:
+  * `shutil.which` confirms `chromium` is installed and present in `$PATH`.
+  * Standard headful invocation without dedicated wrapper flags does not immediately register unmanaged window frames on root `0x51a`, demonstrating that browser actuation relies on specialized initialization routines (`/usr/bin/entrypoint_browser.sh`).
+* **Screen Capture & Typography Toolchain**:
   * `ffmpeg` compiled with native `x11grab` support.
-  * `xdotool` installed for synthetic keystroke injection, pointer navigation, and window resizing on `DISPLAY=:1`.
   * `xclip` integrated with tmux copy-paste buffers (`xclip -selection clipboard -i / -o`).
 * **Typography Stack**:
   * **314 font entries** registered in `fc-list`.

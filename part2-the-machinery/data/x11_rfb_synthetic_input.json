@@ -1,0 +1,26 @@
+{
+  "investigation_a_browser_kiosk": {
+    "binary_used": "chromium",
+    "x11_tree_with_browser": {
+      "stdout": "xwininfo: Window id: 0x51a (the root window) (has no name)\n\n  Root window id: 0x51a (the root window) (has no name)\n  Parent window id: 0x0 (none)\n     1 child:\n     0x200005 \"tmux\": (\"st-256color\" \"st-256color\")  2244x1280+60+50  +60+50",
+      "exit_code": 0
+    },
+    "screenshot_file": {
+      "size_bytes": 15389,
+      "path": "/tmp/chrome_kiosk.png"
+    }
+  },
+  "investigation_b_synthetic_input": {
+    "xdotool_type": { "exit_code": 0 },
+    "xdotool_key": { "exit_code": 0 },
+    "file_written_by_terminal": "KEYSTROKE_INJECTION_CONFIRMED",
+    "tmux_screen_after_injection": "spark@spark:/working_dir$ echo 'KEYSTROKE_INJECTION_CONFIRMED' > /tmp/x11_keystroke_probe.txt\nspark@spark:/working_dir$"
+  },
+  "investigation_c_rfb_handshake": {
+    "server_protocol": "RFB 003.008",
+    "security_types_count": 1,
+    "security_types": [
+      "None (unauthenticated)"
+    ]
+  }
+}
