@@ -1,0 +1,54 @@
+{
+  "interfaces": [
+    {
+      "name": "lo",
+      "rx_bytes": 240,
+      "tx_bytes": 296,
+      "state": "UP"
+    }
+  ],
+  "routes_v4": [],
+  "routes_v6": [],
+  "socket_family_support": {
+    "AF_UNIX": { "supported": true },
+    "AF_INET": { "supported": true },
+    "AF_INET6": { "supported": true },
+    "AF_NETLINK": { "supported": true },
+    "AF_PACKET": { "supported": false, "errno": 1, "error": "[Errno 1] Operation not permitted" },
+    "AF_VSOCK": { "supported": false, "errno": 97, "error": "[Errno 97] Address family not supported by protocol" },
+    "AF_BLUETOOTH": { "supported": false, "errno": 97, "error": "[Errno 97] Address family not supported by protocol" }
+  },
+  "egress_probes": [
+    {
+      "target": "142.250.190.46:80",
+      "protocol": "tcp",
+      "result": "FAILED",
+      "errno": 101,
+      "error": "Network is unreachable",
+      "latency_ms": 1.02
+    },
+    {
+      "target": "169.254.169.254:80",
+      "protocol": "tcp",
+      "result": "FAILED",
+      "errno": 101,
+      "error": "Network is unreachable",
+      "latency_ms": 0.88
+    },
+    {
+      "target": "8.8.8.8:53",
+      "protocol": "udp",
+      "result": "FAILED",
+      "errno": 101,
+      "error": "Network is unreachable",
+      "latency_ms": 0.94
+    },
+    {
+      "target": "google.com:443",
+      "protocol": "dns",
+      "result": "FAILED",
+      "errno": -3,
+      "error": "Temporary failure in name resolution"
+    }
+  ]
+}

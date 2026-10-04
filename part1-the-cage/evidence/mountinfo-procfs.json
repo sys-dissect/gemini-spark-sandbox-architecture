@@ -1,0 +1,90 @@
+[
+  {
+    "mount_id": 18,
+    "parent_id": 17,
+    "major_minor": "0:20",
+    "root": "/",
+    "mount_point": "/",
+    "mount_options": "rw",
+    "filesystem_type": "overlay",
+    "mount_source": "none",
+    "super_options": "rw"
+  },
+  {
+    "mount_id": 22,
+    "parent_id": 18,
+    "major_minor": "0:23",
+    "root": "/",
+    "mount_point": "/ipc",
+    "mount_options": "rw",
+    "filesystem_type": "9p",
+    "mount_source": "none",
+    "super_options": "rw,trans=fd,rfdno=6,wfdno=6,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "mount_id": 26,
+    "parent_id": 18,
+    "major_minor": "0:27",
+    "root": "/",
+    "mount_point": "/usr/local",
+    "mount_options": "rw",
+    "filesystem_type": "9p",
+    "mount_source": "none",
+    "super_options": "rw,trans=fd,rfdno=8,wfdno=8,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "mount_id": 28,
+    "parent_id": 18,
+    "major_minor": "0:30",
+    "root": "/",
+    "mount_point": "/home/spark",
+    "mount_options": "rw",
+    "filesystem_type": "9p",
+    "mount_source": "none",
+    "super_options": "rw,trans=fd,rfdno=7,wfdno=7,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "mount_id": 29,
+    "parent_id": 18,
+    "major_minor": "0:31",
+    "root": "/",
+    "mount_point": "/working_dir",
+    "mount_options": "rw",
+    "filesystem_type": "9p",
+    "mount_source": "none",
+    "super_options": "rw,trans=fd,rfdno=5,wfdno=5,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_file_handle_sharing,disable_fifo_open,directfs"
+  },
+  {
+    "mount_id": 39,
+    "parent_id": 18,
+    "major_minor": "0:34",
+    "root": "/",
+    "mount_point": "/mnt/agentdata",
+    "mount_options": "rw",
+    "filesystem_type": "9p",
+    "mount_source": "none",
+    "super_options": "rw,trans=fd,rfdno=9,wfdno=9,aname=/,dfltuid=4294967294,dfltgid=4294967294,dcache=1000,cache=remote_revalidating,disable_fifo_open,directfs"
+  },
+  {
+    "mount_id": 42,
+    "parent_id": 40,
+    "major_minor": "0:37",
+    "root": "/",
+    "mount_point": "/run/user/1235/memory",
+    "mount_options": "rw,nosuid",
+    "filesystem_type": "fuse",
+    "mount_source": "none",
+    "super_options": "rw,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235"
+  },
+  {
+    "mount_id": 43,
+    "parent_id": 29,
+    "major_minor": "0:37",
+    "root": "/",
+    "mount_point": "/working_dir/memory",
+    "mount_options": "rw,nosuid",
+    "filesystem_type": "fuse",
+    "mount_source": "none",
+    "super_options": "rw,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235"
+  }
+]
