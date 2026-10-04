@@ -217,6 +217,32 @@ Inspection of `/proc/self/mountinfo` ([`evidence/mountinfo-procfs.json`](evidenc
 * **Turn-to-turn persistence [Tier 1]**: Verified empirically. Environment variables appended to `/working_dir/.bashrc` automatically persist into fresh subshells on subsequent turns (via `BASH_ENV`, since `$HOME=/working_dir`).
 * **Across-recycle persistence [Tier 2]**: `/working_dir` contains active subdirectories (`c_<session_id>`) dating back several weeks. Files written to `/working_dir` survive container recycling.
 
+### Storage Hierarchy & Parent Pool Mapping (`/mnt/agentdata`)
+
+**[Tier 1: Directly Observed]**
+
+Traversing `/mnt/agentdata` reveals that it serves as the underlying parent storage fabric from which individual 9P container mounts are exported:
+
+```text
+/mnt/agentdata/
+├── gcs/           (Mirrored object-storage staging tier with .vmaas_claim)
+├── tiered/        (Active persistent volume backing)
+│   ├── home/      (Direct mirror of /home/spark dotfiles)
+│   ├── usr_local/ (Direct mirror of /usr/local)
+│   ├── evidence/  (Shared artifact directory)
+│   └── c_<id>/    (Per-session workspace directories)
+└── memory/        (Jetski cognitive memory backing)
+```
+*(See raw tree artifact: [`evidence/agentdata-hierarchy.txt`](evidence/agentdata-hierarchy.txt))*
+
+### Shared Memory Constraints (`/dev/shm`)
+
+**[Tier 1: Directly Observed]**
+
+* **Mount Type**: Mounted as `tmpfs` with a strict `64 MB` ceiling (`none 64M 0 64M 0% /dev/shm`).
+* **Permissions**: Standard sticky permissions (`1777/drwxrwxrwt`).
+* **IPC Accounting**: System V IPC allocation tables (`ipcs -a`) register 0 shared memory segments, 0 message queues, and 0 semaphores allocated by guest workloads.
+
 ---
 
 ## 1.8 Network Confinement: Hard Air-Gap & Socket Failure Mechanics
@@ -288,3 +314,47 @@ Probing for Linux Security Modules (LSM) within the guest:
 * gVisor's emulated procfs does not implement `/proc/<pid>/attr/`, and SecurityFS is unmounted and unmapped.
 * The `apparmor 3.0.8-3` Debian package exists on disk as an artifact of base rootfs assembly, but the LSM is completely inactive.
 * Together with `Seccomp: 0`, this confirms that containment is enforced exclusively by the Sentry user-space kernel.
+
+---
+
+## 1.12 Container Lifecycle & Eviction Policy (Resolving Open Question #1)
+
+**[Tier 1: Directly Observed]**
+
+To falsify whether the sandbox cell is subject to aggressive turn-to-turn idle eviction (such as 5-minute or 15-minute inactivity timeouts):
+
+* **Continuous Uptime Telemetry**: Reading `/proc/uptime` at turn start recorded `16,199.99 0.00` seconds (~4.50 hours of uninterrupted guest kernel execution).
+* **Logged Turn Ping**: A background timestamp probe written to [`evidence/uptime_probe.log`](evidence/uptime_probe.log) verified continuity across turns:
+  ```text
+  Turn ping: PID 31987 at 1791134049.74 - uptime: 16199.99 0.00
+  ```
+
+### Eviction Finding [Tier 2: Architectural Inference]
+The container is **not** recycled on short idle timers (5 min / 15 min), nor on strict per-turn execution count thresholds. The sandboxed workload cell remains resident in memory across multi-hour conversation gaps as long as the user session lease remains active on the host agent orchestrator.
+
+---
+
+## 1.13 The `/home/spark` Paradox Resolution (Resolving Open Question #2)
+
+**[Tier 1: Directly Observed]**
+
+Earlier probing identified that `$HOME` is explicitly configured as `/working_dir`, raising the question of why `/home/spark` is mounted separately over 9P. Detailed file inspection resolves this architectural puzzle:
+
+### Division of Labor
+* **`/working_dir`**: The primary execution directory for automated agent actions and worker subprocesses (`$HOME` for bash/python tool executions).
+* **`/home/spark`**: The persistent configuration and profile directory for the **virtual desktop session** (`stterm` + `tmux`).
+
+### Dotfile Dissection
+1. **`/home/spark/.tmux.conf`**: Configures seamless X11 clipboard integration for the virtual console:
+   ```tmux
+   bind-key -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-no-clear "xclip -selection clipboard -i"
+   bind-key -n MouseDown2Pane run-shell "xclip -selection clipboard -o | tmux load-buffer - && tmux paste-buffer"
+   ```
+2. **`/home/spark/.bashrc`**: Concludes with an explicit directory handoff:
+   ```bash
+   # Start in working directory.
+   cd /working_dir 2>/dev/null || true
+   ```
+
+When the virtual desktop terminal initializes under TigerVNC as user `spark`, it reads its dotfiles from `/home/spark` and immediately transitions working directory context to `/working_dir`.
+

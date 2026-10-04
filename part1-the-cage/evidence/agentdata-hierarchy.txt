@@ -1,0 +1,12 @@
+/mnt/agentdata/
+├── gcs/           (Mirrored object-storage staging tier with .vmaas_claim)
+├── tiered/        (Active persistent volume backing)
+│   ├── home/      (Direct mirror of /home/spark dotfiles)
+│   ├── usr_local/ (Direct mirror of /usr/local)
+│   ├── evidence/  (Shared artifact directory)
+│   └── c_<id>/    (Per-session workspace directories)
+└── memory/        (Jetski cognitive memory backing)
+
+/dev/shm:
+none                   64M     0   64M   0% /dev/shm
+stat: 1777/drwxrwxrwt
