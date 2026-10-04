@@ -62,9 +62,14 @@ mounts {
 }
 ```
 
-### Architectural Role
+### Architectural Role & Conduit Isolation
 * **Cache Ceiling**: In-guest memory cache bounded to 256 MB (`cache_max_mb: 256`).
-* **IPC Conduit**: All memory queries route across `/ipc/remy_memfs_proxy.sock` (located in the 9P-mediated `/ipc` mount).
+* **Configuration Tree (`/etc/mfs`)**: Direct enumeration confirms that `/etc/mfs` contains strictly a single artifact—`/etc/mfs/config.txtpb`. No secondary configurations, drop-ins, or environment overrides exist on disk.
+* **The `/ipc` Mount Structure**: Probing the 9P-backed `/ipc` mount demonstrates complete isolation to a single socket endpoint:
+  ```text
+  srw-rw---- 1 spark spark 0 Oct 4 12:43 /ipc/remy_memfs_proxy.sock
+  ```
+  `stat` confirms standard Unix domain streaming socket semantics (`Device: 0,23 Inode: 2 Links: 1 Access: 0660`). No auxiliary sidecar sockets or out-of-band telemetry endpoints reside on `/ipc`.
 * **Upstream Service**: The host-side socket target is identified as **Dumbo**, Google's internal vector memory proxy. This provides a sanctioned host-guest communication channel completely separated from the air-gapped network namespace.
 
 ---
