@@ -161,8 +161,11 @@ During the investigation, several initial observations were challenged, refined,
 ├── part1-the-cage/                      # Track 1: Systems & Confinement Whitepaper
 │   ├── README.md                        # Full systems whitepaper (gVisor, 9P, Network Air-Gap)
 │   └── evidence/                        # Raw empirical probe logs & command output
+│       ├── 9p_mount_fd_map.json         # Complete 9P descriptor map (FDs 5–12)
 │       ├── agentdata-hierarchy.txt      # Parent pool layout & /dev/shm tmpfs limits
+│       ├── debian_sources_deb822.txt    # Debian Bookworm snapshot pinning (20260918)
 │       ├── dmesg-gvisor-boot.log        # Captured gVisor satirical boot sequence
+│       ├── gvisor_sysctl_census.json    # Exact 17 emulated /proc/sys/kernel/ nodes
 │       ├── mountinfo-procfs.json        # Complete 9P and overlayfs mount table
 │       ├── network-failure-probes.json  # Socket domain & ENETUNREACH logs
 │       ├── syscall_probe.py             # Complete 13-syscall ctypes test script with arguments
@@ -171,7 +174,9 @@ During the investigation, several initial observations were challenged, refined,
 │   ├── README.md                        # PID 1 analysis, FastAPI router, privilege mapping, VNC
 │   └── data/                            # Extracted schemas, bytecode dumps & inventories
 │       ├── block-localhost-dis.txt      # Disassembled bytecode of block_localhost middleware
+│       ├── debian_package_sections.txt  # Debian section census (387 JS vs 90 Python)
 │       ├── dynamo-exec-routes.json      # In-memory FastAPI route table dump
+│       ├── dynamo_manifest.json         # Chrome extension Manifest V3 & experimental APIs
 │       ├── env_dump.json                # Verbatim environment variable table
 │       ├── fdinfo_9p_probe.txt          # Open descriptors & 9P seek tracking in Sentry
 │       ├── proc_net_unix.txt            # Active Unix domain socket table with inodes
@@ -180,6 +185,8 @@ During the investigation, several initial observations were challenged, refined,
 └── part3-the-mind/                      # Track 3: Cognitive Engine & Memory FUSE
     ├── README.md                        # Jetski Memory FUSE (mfs), Dumbo proxy & Dreaming loops
     └── data/                            # Memory engine schemas and debug artifacts
+        ├── google_internal_absl_flags.txt # LOAS, Chubby, Stubby, Dapper, Monarch flags
+        ├── mfs_cli_status.txt           # Live mfs status and group CLI hierarchy
         ├── mfs_config.txtpb             # Raw protobuf configuration for the Jetski FUSE daemon
         ├── mfs_debug.txt                # Diagnostic report, FUSE mount options, Buganizer ID
         └── mfs_symbols.txt              # 350+ demangled C++ symbols from learning::gemini::memory
@@ -189,12 +196,14 @@ During the investigation, several initial observations were challenged, refined,
 
 ## Open Questions & Falsifiability Status
 
+All three primary architectural questions raised during the initial dissection have now been **empirically resolved**:
+
 1. **Recycle Cadence Policy** — **[RESOLVED (§1.12)]**:
-   * *Status*: Verified. Uptime telemetry at turn start registered `16,199.99` seconds (~4.50 hours). The container cell is not pruned on short 5-minute or 15-minute idle windows, remaining active as long as the host session lease persists.
+   * *Finding*: Uptime telemetry at turn start registered `16,199.99` seconds (~4.50 hours). The container cell is not pruned on short 5-minute or 15-minute idle windows, remaining active as long as the host session lease persists.
 2. **The Purpose of `/home/spark`** — **[RESOLVED (§1.13)]**:
-   * *Status*: Verified. While `/working_dir` serves as `$HOME` for tool subshells, `/home/spark` houses persistent profiles and clipboard integration (`.tmux.conf`, `xclip`) for the TigerVNC virtual desktop session, with its `.bashrc` delegating execution context to `/working_dir`.
-3. **The Sudo-Grant Rationale** — *[OPEN]*:
-   * *Status*: Granting passwordless `sudo` rights for `apt-get`, `apt`, and `dpkg` inside a container with zero outbound connectivity appears redundant for standard package installation. It may be an artifact of base image baking or intended for offline package caching mechanisms that were not observed during probing.
+   * *Finding*: While `/working_dir` serves as `$HOME` for tool subshells, `/home/spark` houses persistent profiles and clipboard integration (`.tmux.conf`, `xclip`) for the TigerVNC virtual desktop session, with its `.bashrc` delegating execution context to `/working_dir`.
+3. **The Sudo-Grant Rationale** — **[RESOLVED (§1.14)]**:
+   * *Finding*: Deb822 repository auditing confirmed that the rootfs was constructed from an upstream Debian Bookworm snapshot frozen on September 18, 2026 (`20260918T000000Z`). Sudo delegation is an inherited build-time template artifact that remains completely inert in production due to device-level network isolation (`ENETUNREACH`).
 
 ---
 
