@@ -20,23 +20,41 @@ Inspection of `/proc/1/cmdline`:
 * **Daemon Implementation**: PID 1 initializes from `/root/shell_wrapper.py` and runs an in-memory **FastAPI/Uvicorn** server defined in `/root/dynamo_exec.py`.
 * **Privilege Separation**: While initialized from `/root`, PID 1 drops privileges to `UID 1235` (`spark`, `GID 1235`) with capabilities completely cleared (`CapEff: 0x0`, `CapPrm: 0x0`).
 
-### Endpoint Specifications
+### Endpoint Specifications & Canonical OpenAPI 3.0.2 Schema
 
-*(See extracted schema: [`data/dynamo-exec-routes.json`](data/dynamo-exec-routes.json))*
+Direct query of `/openapi.json` across `/tmp/shell.sock` yields the live OpenAPI 3.0.2 contract ([`data/openapi-schema.json`](data/openapi-schema.json)), exposing the exact Pydantic models and internal docstrings defined by Google's container engineers:
 
 #### 1. `POST /execute_bash`
-* **Request**: `{"command": "<bash_script>"}`
-* **Implementation**: Invokes `/usr/bin/bash -O expand_aliases -c <command>` as `UID 1235`.
-* **Non-blocking I/O**: Employs Python `selectors` with 4096-byte non-blocking chunks on stdout and stderr pipes to avoid buffer deadlocks.
+* **Operation ID**: `execute_bash_script_execute_bash_post`
+* **Request Model**: `ExecuteBashRequest` (`{"command": "string"}`)
+* **Response Content**: `text/plain` (200 OK) / `application/json` (`HTTPValidationError`, 422)
+* **Verbatim Description**: *"Executes arbitrary shell command from POST request."*
+* **Implementation**: Spawns `/usr/bin/bash -O expand_aliases -c <command>` as `UID 1235`. Employs Python `selectors` with 4096-byte non-blocking chunks on stdout/stderr pipes to avoid buffer deadlocks.
 * **Timeout Handling**: **No timeout is hardcoded inside the container.** Timeouts are managed externally by the host-side RPC caller. When the RPC caller times out, it severs the connection; unkilled subshell processes continue executing until completion, reparented to PID 1.
 
 #### 2. `POST /execute_python`
-* **Request**: `{"code": "<python_code>"}`
-* **Implementation**: Executes Python code via `exec()` directly inside a global dictionary named `_PYTHON_EXEC_SCOPE`.
-* **In-Memory Statefulness**: Variables, imported modules, functions, and class definitions declared during one turn persist in memory across sequential tool calls within the same container lifecycle. Generational GC thresholds are standard CPython 3.11 defaults (`[700, 10, 10]`) with recursion limit `1000`.
+* **Operation ID**: `execute_python_script_execute_python_post`
+* **Request Model**: `ExecutePythonRequest` (`{"code": "string"}`)
+* **Response Content**: `text/plain` (200 OK) / `application/json` (`HTTPValidationError`, 422)
+* **Verbatim Description**:
+  > *"Executes Python code from POST request.\n\nUnlike /execute_bash which spawns a new subprocess per call (stateless),\nthis endpoint runs code via exec() in a persistent in-memory namespace\n(_PYTHON_EXEC_SCOPE), so variables and imports survive across calls\n(stateful session)."*
+* **In-Memory Statefulness**: Confirms the architectural duality—Bash is completely stateless per subprocess, while Python executes directly within PID 1’s memory address space via `exec()`, maintaining persistent variables and module state across sequential tool turns.
 
-#### 3. `POST /save_file` & `POST /fetch_file`
-* Implements base64 serialization to read and write files within the persistent `/working_dir` mount. Paths are resolved via an internal helper function `_resolve_working_path`.
+#### 3. `POST /save_file`
+* **Operation ID**: `save_file_save_file_post`
+* **Request Model**: `SaveFileRequest` (`{"content": "string (base64)", "file_path": "string"}`)
+* **Verbatim Description**: *"Saves base64-encoded content to a file in the drive_files directory."*
+
+#### 4. `POST /fetch_file`
+* **Operation ID**: `fetch_file_fetch_file_post`
+* **Request Model**: `FetchFileRequest` (`{"file_path": "string"}`)
+* **Verbatim Description**: *"Reads a file from the drive_files directory and returns its base64-encoded content."*
+
+### Interactive API Explorer Endpoints
+Probing the supervisor socket confirms that default FastAPI documentation endpoints remain active:
+* **`/docs`**: Returns HTTP 200 with complete **Swagger UI v4** HTML (`https://cdn.jsdelivr.net/npm/swagger-ui-dist@4`).
+* **`/redoc`**: Returns HTTP 200 with complete **ReDoc** HTML.
+* While accessible over `/tmp/shell.sock`, TCP access over localhost is terminated with `403 Forbidden` by the `block_localhost` middleware (§2.3).
 
 ---
 
