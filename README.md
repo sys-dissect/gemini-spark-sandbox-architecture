@@ -161,18 +161,22 @@ During the investigation, several initial observations were challenged, refined,
 ├── part1-the-cage/                      # Track 1: Systems & Confinement Whitepaper
 │   ├── README.md                        # Full systems whitepaper (gVisor, 9P, Network Air-Gap)
 │   └── evidence/                        # Raw empirical probe logs & command output
+│       ├── agentdata-hierarchy.txt      # Parent pool layout & /dev/shm tmpfs limits
 │       ├── dmesg-gvisor-boot.log        # Captured gVisor satirical boot sequence
 │       ├── mountinfo-procfs.json        # Complete 9P and overlayfs mount table
+│       ├── network-failure-probes.json  # Socket domain & ENETUNREACH logs
 │       ├── syscall_probe.py             # Complete 13-syscall ctypes test script with arguments
-│       └── network-failure-probes.json  # Socket domain & ENETUNREACH logs
+│       └── uptime_probe.log             # Multi-hour continuous uptime log (4.5h)
 ├── part2-the-machinery/                 # Track 2: Binary Architecture, Daemon Lifecycle & IPC
 │   ├── README.md                        # PID 1 analysis, FastAPI router, privilege mapping, VNC
 │   └── data/                            # Extracted schemas, bytecode dumps & inventories
 │       ├── block-localhost-dis.txt      # Disassembled bytecode of block_localhost middleware
 │       ├── dynamo-exec-routes.json      # In-memory FastAPI route table dump
 │       ├── env_dump.json                # Verbatim environment variable table
+│       ├── fdinfo_9p_probe.txt          # Open descriptors & 9P seek tracking in Sentry
 │       ├── proc_net_unix.txt            # Active Unix domain socket table with inodes
-│       └── worker_bin_telemetry.txt     # Extracted WebSocket strings and APC schemas
+│       ├── worker_bin_telemetry.txt     # Extracted WebSocket strings and APC schemas
+│       └── x11_mit_shm_telemetry.txt    # X11 MIT-SHM extension and XKB rules probe
 └── part3-the-mind/                      # Track 3: Cognitive Engine & Memory FUSE
     ├── README.md                        # Jetski Memory FUSE (mfs), Dumbo proxy & Dreaming loops
     └── data/                            # Memory engine schemas and debug artifacts
@@ -183,15 +187,14 @@ During the investigation, several initial observations were challenged, refined,
 
 ---
 
-## Open Questions & Falsifiability Statements
+## Open Questions & Falsifiability Status
 
-The following architectural questions remain unresolved and are left as explicit open research directions:
-
-1. **Recycle Cadence Policy**: It remains unmeasured whether container recycling is driven by elapsed wall-clock idle time, tool execution count, memory consumption thresholds, or host-side scheduling events.
-   * *Falsification test*: Staging long-running background timers across turns of varied duration to observe exact cutoff points.
-2. **The Purpose of `/home/spark`**: With `$HOME` explicitly set to `/working_dir` by both `dynamo_exec` and the shell environment, `/home/spark` is mounted via 9P but largely bypassed by active tools. Its role in multi-user setups or legacy workflows remains unverified.
-   * *Falsification test*: Monitoring inotify events or file access patterns on `/home/spark` during complex agent tasks.
-3. **The Sudo-Grant Rationale**: Granting passwordless `sudo` rights for `apt-get`, `apt`, and `dpkg` inside a container with zero outbound connectivity appears redundant for standard package installation. It may be an artifact of image preparation or intended for offline package caching mechanisms that were not observed during probing.
+1. **Recycle Cadence Policy** — **[RESOLVED (§1.12)]**:
+   * *Status*: Verified. Uptime telemetry at turn start registered `16,199.99` seconds (~4.50 hours). The container cell is not pruned on short 5-minute or 15-minute idle windows, remaining active as long as the host session lease persists.
+2. **The Purpose of `/home/spark`** — **[RESOLVED (§1.13)]**:
+   * *Status*: Verified. While `/working_dir` serves as `$HOME` for tool subshells, `/home/spark` houses persistent profiles and clipboard integration (`.tmux.conf`, `xclip`) for the TigerVNC virtual desktop session, with its `.bashrc` delegating execution context to `/working_dir`.
+3. **The Sudo-Grant Rationale** — *[OPEN]*:
+   * *Status*: Granting passwordless `sudo` rights for `apt-get`, `apt`, and `dpkg` inside a container with zero outbound connectivity appears redundant for standard package installation. It may be an artifact of base image baking or intended for offline package caching mechanisms that were not observed during probing.
 
 ---
 
