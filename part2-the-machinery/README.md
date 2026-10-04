@@ -50,11 +50,30 @@ Direct query of `/openapi.json` across `/tmp/shell.sock` yields the live OpenAPI
 * **Request Model**: `FetchFileRequest` (`{"file_path": "string"}`)
 * **Verbatim Description**: *"Reads a file from the drive_files directory and returns its base64-encoded content."*
 
-### Interactive API Explorer Endpoints
-Probing the supervisor socket confirms that default FastAPI documentation endpoints remain active:
-* **`/docs`**: Returns HTTP 200 with complete **Swagger UI v4** HTML (`https://cdn.jsdelivr.net/npm/swagger-ui-dist@4`).
-* **`/redoc`**: Returns HTTP 200 with complete **ReDoc** HTML.
-* While accessible over `/tmp/shell.sock`, TCP access over localhost is terminated with `403 Forbidden` by the `block_localhost` middleware (§2.3).
+### Interactive API Explorer & Complete In-Memory Route Census
+
+Introspection of the running Python process supervisor reveals the internal module structure and provides an exhaustive inventory of all registered ASGI routes:
+
+* **Entrypoint vs. ASGI Application**: In `__main__`, `app` refers to Google's standard `absl.app` entrypoint framework (`from absl import app`), whereas the underlying FastAPI ASGI application instance inside `dynamo_exec` is explicitly bound as **`http_app`** (`dynamo_exec.http_app`).
+* **Exhaustive Route Census ([`data/fastapi_route_census.txt`](data/fastapi_route_census.txt))**: Runtime introspection of `dynamo_exec.http_app.routes` confirms that **no hidden, undocumented, or administrative routes exist** within the daemon. The routing table contains strictly 8 registered handlers:
+
+| Route Path | HTTP Methods | Handler Name | `in_schema` | Classification |
+| :--- | :--- | :--- | :--- | :--- |
+| **`/openapi.json`** | `GET`, `HEAD` | `openapi` | `False` | OpenAPI 3.0.2 Schema Generation |
+| **`/docs`** | `GET`, `HEAD` | `swagger_ui_html` | `False` | Swagger UI v4 Web Explorer |
+| **`/docs/oauth2-redirect`** | `GET`, `HEAD` | `swagger_ui_redirect` | `False` | Swagger OAuth2 Redirect Handler |
+| **`/redoc`** | `GET`, `HEAD` | `redoc_html` | `False` | ReDoc API Documentation |
+| **`/execute_bash`** | `POST` | `execute_bash_script` | `True` | Stateless Subprocess Command Execution |
+| **`/execute_python`** | `POST` | `execute_python_script` | `True` | Stateful In-Memory Execution (`_PYTHON_EXEC_SCOPE`) |
+| **`/save_file`** | `POST` | `save_file` | `True` | Base64 Artifact Disk Serialization |
+| **`/fetch_file`** | `POST` | `fetch_file` | `True` | Base64 Artifact Retrieval |
+
+#### Hardening & Operational Implications
+1. **Zero Secret Surface**: There are no hidden metrics (`/metrics`), healthchecks (`/healthz`), namespace-clearing endpoints (`/reset`), or privileged debug hooks mounted on `http_app`.
+2. **Framework Default Exposure**: `http_app` was initialized without explicitly suppressing Swagger/ReDoc (`docs_url=None`, `redoc_url=None`), retaining default interactive documentation handlers.
+3. **Air-Gap Asset Failure**: While `/docs` serves its HTML shell with HTTP 200, its embedded CDN scripts (`https://cdn.jsdelivr.net/npm/swagger-ui-dist@4/...`) fail to resolve due to gVisor's air-gap isolation (`ENETUNREACH`), rendering the interactive UI non-functional in the guest unless assets are locally proxied or injected.
+4. **Transport Gate**: While resident on `/tmp/shell.sock`, inbound TCP requests from `localhost`, `127.0.0.1`, and `0.0.0.0` are rejected with `403 Forbidden` by the `block_localhost` middleware (§2.3).
+
 
 ---
 

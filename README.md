@@ -179,6 +179,7 @@ During the investigation, several initial observations were challenged, refined,
 │       ├── dynamo_manifest.json         # Chrome extension Manifest V3 & experimental APIs
 │       ├── env_dump.json                # Verbatim environment variable table
 │       ├── fdinfo_9p_probe.txt          # Open descriptors & 9P seek tracking in Sentry
+│       ├── fastapi_route_census.txt     # In-memory route table census from dynamo_exec.http_app
 │       ├── openapi-schema.json          # Live canonical OpenAPI 3.0.2 schema from shell.sock
 │       ├── proc_net_unix.txt            # Active Unix domain socket table with inodes
 │       ├── worker_bin_telemetry.txt     # Extracted WebSocket strings and APC schemas

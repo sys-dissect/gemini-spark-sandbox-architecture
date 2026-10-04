@@ -1,0 +1,9 @@
+=== Found FastAPI app in dynamo_exec.http_app ===
+Route: {'GET', 'HEAD'} /openapi.json -> openapi [in_schema=False]
+Route: {'GET', 'HEAD'} /docs -> swagger_ui_html [in_schema=False]
+Route: {'GET', 'HEAD'} /docs/oauth2-redirect -> swagger_ui_redirect [in_schema=False]
+Route: {'GET', 'HEAD'} /redoc -> redoc_html [in_schema=False]
+Route: {'POST'} /execute_bash -> execute_bash_script [in_schema=True]
+Route: {'POST'} /execute_python -> execute_python_script [in_schema=True]
+Route: {'POST'} /save_file -> save_file [in_schema=True]
+Route: {'POST'} /fetch_file -> fetch_file [in_schema=True]
