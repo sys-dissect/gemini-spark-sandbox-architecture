@@ -1,0 +1,24 @@
+root_dir: "/run/user/1235/memory"
+cache_max_mb: 256
+mounts {
+  key: "default"
+  value {
+    dumbo {
+      ipc_proxy {
+        sock: "/ipc/remy_memfs_proxy.sock"
+        timeout_ms: 60000
+      }
+    }
+  }
+}
+mounts {
+  key: "remy"
+  value {
+    dumbo {
+      ipc_proxy {
+        sock: "/ipc/remy_memfs_proxy.sock"
+        timeout_ms: 60000
+      }
+    }
+  }
+}

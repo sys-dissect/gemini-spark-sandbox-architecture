@@ -1,0 +1,22 @@
+=== Jetski Memory FUSE Daemon Debug Telemetry ===
+Binary: /usr/bin/mfs
+Linker: /usr/grte/v5/lib64/ld-linux-x86-64.so.2 (Google Runtime Environment GRTE v5)
+Buganizer Component URL: http://b/issues/new?component=2214715
+
+Active Daemon Processes:
+- PID 66: sudo -u spark mfs daemon start --config=/etc/mfs/config.txtpb
+- PID 69: /usr/bin/mfs daemon worker (UID 1235)
+
+Mount Points:
+- /run/user/1235/memory
+- /working_dir/memory
+Mount Options: rw,nosuid,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235
+
+IPC Conduits:
+- Local Daemon Socket: /working_dir/.gemini/jetski/memory/daemon.sock
+- Host Proxy Socket: /ipc/remy_memfs_proxy.sock (Plan 9 mapped)
+  Target Service: Dumbo Memory Proxy (host-side)
+
+Filesystem Semantics:
+- os.listdir() on /run/user/1235/memory returns in ~0.61 ms.
+- Standard shell 'ls' returns Function not implemented (ENOSYS), indicating an object/vector bridge rather than a standard POSIX directory.
