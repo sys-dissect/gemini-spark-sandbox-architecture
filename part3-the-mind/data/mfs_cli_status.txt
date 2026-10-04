@@ -1,0 +1,21 @@
+Daemon: online (pid 67)
+Root:   /run/user/1235/memory
+Logs:   ~/.gemini/jetski/memory/logs/memoryfs.INFO.log
+
+NAME     MOUNTPOINT       STATUS   MODE   ENTRIES      SIZE        CACHED DIRTY
+  (no mounts configured)
+
+=== mfs group CLI Help ===
+help for "mfs group"
+
+mfs group <COMMAND>
+
+Manage memory groups.
+
+ create          Create a new memory group.
+ get             Get metadata for a memory group.
+ mount           Mount a memory group.
+ unmount         Unmount a memory group.
+ delete          Delete a memory group.
+ update-readers  Update readers of a memory group.
+ update-writers  Update writers of a memory group.

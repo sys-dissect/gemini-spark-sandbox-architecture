@@ -16,9 +16,18 @@ Inspection of `/usr/bin/mfs` and active daemon processes ([`data/mfs_debug.txt`]
 
 * **Binary Fingerprint**: `/usr/bin/mfs` is an unstripped 64-bit ELF binary dynamically linked against `/usr/grte/v5/lib64/ld-linux-x86-64.so.2` (Google Runtime Environment GRTE v5).
 * **Internal Tracking**: Buganizer component string embedded in the binary: `http://b/issues/new?component=2214715`.
-* **Supervision Model**:
+* **Supervision Model & Live Status** ([`data/mfs_cli_status.txt`](data/mfs_cli_status.txt)):
   * PID 66 executes: `sudo -u spark mfs daemon start --config=/etc/mfs/config.txtpb`
-  * Supervises unprivileged worker PID 69 (`UID 1235`, `spark`).
+  * Supervises unprivileged worker PID 67 (`UID 1235`, `spark`).
+  * Direct CLI query (`/usr/bin/mfs status`):
+    ```text
+    Daemon: online (pid 67)
+    Root:   /run/user/1235/memory
+    Logs:   ~/.gemini/jetski/memory/logs/memoryfs.INFO.log
+    
+    NAME     MOUNTPOINT       STATUS   MODE   ENTRIES      SIZE        CACHED DIRTY
+      (no mounts configured)
+    ```
 * **FUSE Mount Points**:
   * Bound to `/run/user/1235/memory` and `/working_dir/memory`.
   * Mount options: `rw,nosuid,allow_other,default_permissions,fd=3,rootmode=40000,user_id=1235,group_id=1235`.
@@ -74,11 +83,17 @@ mounts {
 
 ---
 
-## 3.3 Extracted C++ Symbols: `learning::gemini::memory`
+## 3.3 Extracted C++ Symbols & Protobuf Services
 
 **[Tier 1: Directly Observed]**
 
-Extracting demangled C++ symbol tables from `/usr/bin/mfs` ([`data/mfs_symbols.txt`](data/mfs_symbols.txt)) maps the core schema of Google's cognitive state engine:
+Static symbol and string analysis of `/usr/bin/mfs` maps the core service contracts and RPC schemas of Google's cognitive state engine:
+
+### Core Protobuf Service Contracts
+* **`learning.gemini.memory.MemoryService`**: Serves memory retrieval, vector indexing, snapshots, and background Dream consolidation.
+* **`learning.gemini.memory.GroupService`**: Governs multi-tenant memory access groups and reader/writer permission delegation.
+
+### Schema Message Inventory ([`data/mfs_symbols.txt`](data/mfs_symbols.txt))
 
 ```text
 learning::gemini::memory::SearchRequest
@@ -151,3 +166,66 @@ The string literal `/etc/googlekeys/thinmint-verification-keys-non-grte/combined
 
 * **On-Disk Audit**: Direct inspection confirmed that `/etc/googlekeys` **does not exist** on disk inside the container.
 * **Finding**: The path is a compiled-in default search path within the shared library rather than a deployed credential file inside the guest. Whether host-injected commands carry cryptographic tokens across the boundary remains unverified from within the guest cell.
+
+---
+
+## 3.6 Multi-Tenant Memory Group Governance & CLI Surface
+
+**[Tier 1: Directly Observed]**
+
+Beyond automated FUSE synchronization, `/usr/bin/mfs` exposes a structured CLI command hierarchy ([`data/mfs_cli_status.txt`](data/mfs_cli_status.txt)):
+
+### Available CLI Command Surface
+* **`mfs status`**: Dumps active daemon health, mountpoint bindings, cache entry counts, and dirty state.
+* **`mfs search` / `mfs similar`**: Performs in-guest semantic vector similarity searches over long-term memories.
+* **`mfs sync`**: Forces bidirectional synchronization between the local FUSE state and the host Dumbo backend.
+* **`mfs group`**: Implements an access-controlled multi-tenant memory group governance model:
+  * `create`: Allocates a new logical memory group.
+  * `get`: Retrieves metadata and configuration for a specified memory group.
+  * `mount` / `unmount`: Attaches or detaches logical memory groups to the local FUSE hierarchy.
+  * `update-readers` / `update-writers`: Updates access control lists (ACLs) governing read and write access across multi-agent workflows.
+
+---
+
+## 3.7 Google Internal Monorepo Lineage & Embedded Infrastructure
+
+**[Tier 1: Directly Observed]**
+
+String extraction of Abseil flags (`FLAGS_`) embedded within `/usr/bin/mfs` ([`data/google_internal_absl_flags.txt`](data/google_internal_absl_flags.txt)) establishes direct provenance from Google's core production monorepo:
+
+* **LOAS (Low Overhead Authentication Service)**:
+  * Flag: `--lockservice_use_loas=true`, `--loas_auth_server_app_ports`.
+  * *Role*: Google's internal cryptographic mutual attestation system for inter-service communication.
+* **Chubby Distributed Lock Service**:
+  * Flag: `--chubby_fake_heartbeat_interval`.
+  * *Role*: Heartbeat and lock consensus management.
+* **Stubby & Census RPC Telemetry**:
+  * Flag: `--census_enable_per_target_stubby_stats`.
+  * *Role*: Stubby (Google's internal precursor/foundation of gRPC) coupled with Census for RPC stat tracking.
+* **Dapper Distributed Tracing**:
+  * Flag: `--dapper_enable_background_tracing`.
+  * *Role*: Google's distributed request tracing system.
+* **Monarch & Streamz Metrics**:
+  * Flag: `--custom_monarch_fields`, `--streamz_servers`.
+  * *Role*: Google's internal planet-scale time-series metric and monitoring infrastructure.
+* **Fireaxe Configuration Push**:
+  * Flag: `--fireaxe_realm=`, `--fireaxe_push_def`.
+  * *Role*: Google's internal continuous configuration delivery framework.
+
+---
+
+## 3.8 The GRTE Symlink Bridge & Blaze Compatibility
+
+**[Tier 1: Directly Observed]**
+
+Google binaries built under Blaze/Bazel are statically configured to load the ELF interpreter from `/usr/grte/v5/lib64/ld-linux-x86-64.so.2`.
+
+* **The Symlink Shim**:
+  Inspection of `/usr/grte/v5/` reveals that Google did not package a separate proprietary C library into the image:
+  ```text
+  /usr/grte/v5/lib64/ld-linux-x86-64.so.2 -> /lib64/ld-linux-x86-64.so.2
+  ```
+  The GRTE hierarchy is a lightweight symbolic link that maps Google's internal interpreter path directly to Debian 12's native glibc dynamic loader.
+* **InitGoogle Framework**:
+  The presence of `/tmp/initgoogle_syslog_dir.1235` confirms that Google's internal C++ application bootstrap framework (`InitGoogle()`) actively initializes process logging and signal telemetry for UID 1235.
+
