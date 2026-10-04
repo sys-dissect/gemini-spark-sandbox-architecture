@@ -1,0 +1,43 @@
+{
+  "name": "Hello Dynamo",
+  "description": "Basic extension using Dynamo for APC/actuation.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "worker_bin.js"
+  },
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "experimentalAiData",
+    "experimentalActor",
+    "identity.email",
+    "identity",
+    "storage",
+    "unlimitedStorage",
+    "pageCapture",
+    "windows",
+    "tabs",
+    "background",
+    "webRequest",
+    "webRequestExtraHeaders"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["suppress_conditional_ui.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["pinned_tab.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

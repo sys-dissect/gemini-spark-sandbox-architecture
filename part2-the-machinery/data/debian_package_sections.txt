@@ -1,0 +1,15 @@
+480 libs
+387 javascript
+ 90 python
+ 52 perl
+ 44 utils
+ 40 admin
+ 21 java
+ 18 fonts
+ 17 devel
+ 16 x11
+ 16 misc
+ 14 libdevel
+ 12 introspection
+ 12 editors
+ 10 text

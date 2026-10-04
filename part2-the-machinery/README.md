@@ -133,16 +133,23 @@ Rather than a generic Linux development shell, the environment is provisioned as
 
 ---
 
-## 2.5 Cross-Persona Artifacts: `worker_bin.js` & `entrypoint_browser.sh`
+## 2.5 Cross-Persona Artifacts: The "Hello Dynamo" Extension & `worker_bin.js`
 
 **[Tier 1: Directly Observed]**
 
-Inspection of `/opt/chrome_extensions/dynamo/worker_bin.js` (a ~4.5 MB compiled Chrome extension) provides insight into image layering ([`data/worker_bin_telemetry.txt`](data/worker_bin_telemetry.txt)):
+Inspection of `/opt/chrome_extensions/dynamo/` reveals the underlying browser actuation layer shared across Google's agent platform ([`data/dynamo_manifest.json`](data/dynamo_manifest.json)):
 
-* **Internal Build Path**: `//blaze-out/k8-fastbuild/bin/assistant/boq/lamda/agents/dynamo/extension/worker_bin.jstrimmer_bootstrap.js`.
-* **APC Identity**: Log prefix identifies the module as `Service Worker (APC Extension):`, implementing Annotated Page Content schemas (`MutableAnnotatedPageContent.proto`).
-* **WebSocket Bridge**: Contains hardcoded client connections to `ws://localhost:8080/ws/register_worker` ("WebSocket connection established with Selenium server").
-* **Accessibility Schemas**: Implements `MutableAXTreeUpdate.proto`, `MutableAXNodeData.proto`, `MutableAXRelativeBounds.proto`, and `.chrome.intelligence.modeling.features.forms_ai.proto`.
+* **Extension Manifest (`manifest.json`)**:
+  * **Identity**: Named `"Hello Dynamo"`, described as `"Basic extension using Dynamo for APC/actuation."` (Manifest V3).
+  * **Experimental Agent Capabilities**: Requests internal Chromium permissions including `"experimentalAiData"`, `"experimentalActor"`, `"pageCapture"`, `"webRequest"`, and `"webRequestExtraHeaders"` across `<all_urls>`.
+  * **Interstitials Suppression (`suppress_conditional_ui.js`)**: Injects a content script at `document_start` across `<all_urls>` into the `MAIN` execution world (`all_frames: true`) to suppress cookie dialogs, banners, and modals before DOM capture.
+  * **Hermetic Build Provenance**: All extension files bear the deterministic Bazel epoch timestamp (`Jan 1 1980`).
+* **Service Worker Dissection (`worker_bin.js`, 4.5 MB)**:
+  * **Internal Build Path**: `//blaze-out/k8-fastbuild/bin/assistant/boq/lamda/agents/dynamo/extension/worker_bin.jstrimmer_bootstrap.js`.
+  * **APC Identity**: Log prefix identifies the module as `Service Worker (APC Extension):`, implementing Annotated Page Content schemas (`MutableAnnotatedPageContent.proto`).
+  * **WebSocket Bridge**: Contains hardcoded client connections to `ws://localhost:8080/ws/register_worker` ("WebSocket connection established with Selenium server").
+  * **Accessibility Schemas**: Implements `MutableAXTreeUpdate.proto`, `MutableAXNodeData.proto`, `MutableAXRelativeBounds.proto`, and `.chrome.intelligence.modeling.features.forms_ai.proto`.
+  *(See extracted telemetry: [`data/worker_bin_telemetry.txt`](data/worker_bin_telemetry.txt))*
 
 ### Calibrated Shared-Base Thesis
 File presence auditing established:
@@ -161,6 +168,12 @@ File presence auditing established:
 
 ### Package & Binary Census
 * **Debian Packages (`dpkg -l`)**: Exactly **1,309** installed packages.
+* **Debian Section Breakdown** ([`data/debian_package_sections.txt`](data/debian_package_sections.txt)):
+  * **JavaScript Heavyweight**: **387 `javascript` packages** dominate the userspace, outnumbering Python packages by more than 4:1.
+  * **Libraries**: 480 `libs` and 14 `libdevel` packages providing core vector rendering (Cairo, Pango, HarfBuzz, FreeType).
+  * **Python**: 90 `python` packages in base Debian (with 151 wheels deployed in `/opt/spark/local`).
+  * **Utilities & Admin**: 44 `utils`, 40 `admin`, 52 `perl`.
+  * **Runtimes & Display**: 21 `java` (headless JRE), 18 `fonts`, 16 `x11`.
 * **Python Packages (`pip list`)**: Exactly **151** packages installed in `/opt/spark/local/lib/python3.11/dist-packages` (including `numpy 2.1.3`, `scipy 1.15.2`, `pandas 2.2.3`, `onnxruntime 1.30.0`, `ortools 9.14.6206`, `sympy 1.13.3`, `fastapi 0.92.0`, `uvicorn 0.17.6`).
 * **Node.js Environment**:
   * Node.js: `v18.20.4`
@@ -199,22 +212,20 @@ PYTHONPATH=/opt/spark/lib/python3/dist-packages:/opt/spark/lib/python3.11/dist-p
 
 ---
 
-## 2.7 Visual Subsystem & Document Synthesis Pipeline
+## 2.7 Headless Kiosk Visual Subsystem & Document Synthesis
 
 **[Tier 1: Directly Observed]**
 
-The sandbox is configured with a fully functional X11 graphical display environment:
+The sandbox is configured with a specialized headless X11 graphical display environment tailored for programmatic interaction rather than human desktop usage:
 
 * **Virtual Display**: PID 8 executes `Xtigervnc :1 -geometry 2560x1440 -depth 24 -rfbport 5901 -FrameRate 30`.
-* **Active Window Tree (`xwininfo -root -tree`)**:
-  ```text
-  xwininfo: Window id: 0x51a (the root window) (has no name)
-     1 child:
-     0x200005 "tmux": ("st-256color" "st-256color")  2244x1280+60+50  +60+50
-  ```
+* **Zero Window Manager Architecture (Headless Kiosk)**:
+  * Probing root atoms via `xprop -root _NET_SUPPORTED` and `_NET_WM_NAME` returns **no such atom**.
+  * `xlsclients -l` confirms zero window manager clients are registered.
+  * There is **no Window Manager** (e.g. Openbox, Fluxbox, or Metacity). `stterm` is mapped directly as an unmanaged child window of the root window (`0x51a`) positioned at `2244x1280+60+50`. This completely eliminates reparenting, focus stealing, and window frame rendering overhead.
 * **X11 Extensions & MIT-SHM Telemetry** ([`data/x11_mit_shm_telemetry.txt`](data/x11_mit_shm_telemetry.txt)):
-  * Probing `xdpyinfo -ext MIT-SHM` confirms that **MIT-SHM shared memory extension is supported and active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
-  * Display attributes: `2560x1440` pixels @ 96 DPI, 24 planes TrueColor/DirectColor.
+  * Probing `xdpyinfo -ext MIT-SHM` confirms that the **MIT-SHM shared memory extension is supported and active**: `version 1.2 opcode: 131, base event: 68, base error: 128` with `shared pixmaps: yes, format: 2`.
+  * Combined with the 64 MB `/dev/shm` tmpfs ceiling, this enables zero-copy shared memory frame grabbing directly from the TigerVNC framebuffer.
   * Root properties (`xprop -root`): Initialized with standard evdev rules `_XKB_RULES_NAMES = "evdev", "pc105", "us", "", ""`.
 * **Screen Capture & Automation**:
   * `ffmpeg` is compiled with native `x11grab` support enabled.
@@ -247,4 +258,32 @@ flags:  02100000
 mnt_id: 29
 ```
 * **Architectural Significance**: Confirms that gVisor Sentry maintains and updates file seek positions (`pos`) and mount associations (`mnt_id: 29`) directly in user-space Go memory across host 9P file descriptors.
+
+---
+
+## 2.9 Subreaper Mechanics & Orphan Reparenting
+
+**[Tier 1: Directly Observed]**
+
+Testing double-fork child process detachment (`fork()` $\to$ `fork()` $\to$ intermediate exit):
+
+* **Init Process Reparenting**: Orphaned grandchildren are automatically reparented to **PID 1** (`reparented_to: 1`).
+* **Zombies Cleared**: Sentry natively emulates Linux subreaper semantics, ensuring unmanaged subprocesses are automatically reaped by `shell_wrapper.py` without leaking zombie tasks in the guest process table.
+
+---
+
+## 2.10 Runtime Memory Economy & On-Demand Module Loading
+
+**[Tier 1: Directly Observed]**
+
+Auditing in-memory state versus on-disk software reveals Google's density optimization strategy:
+
+* **Idle Footprint of PID 1**:
+  * State: `S (sleeping)` across **2 threads**.
+  * Resident Set Size: **48,680 kB (~47.5 MB VmRSS)**.
+* **Module Pre-loading Strategy**:
+  * Exactly **475 modules** are mapped in `sys.modules` within PID 1 upon boot (consisting purely of standard library essentials, Abseil flags/logging, and FastAPI/Uvicorn).
+  * **Heavy ML Runtimes Cold on Disk**: Neither PyTorch, JAX, TensorFlow, ONNX Runtime, OpenCV (`cv2`), WeasyPrint, PIL, NumPy, nor Pandas are pre-imported. They reside strictly on-disk in `/opt/spark/local/` and are loaded on-demand.
+* **Density Benefit**: By maintaining a base resident memory footprint of under 50 MB, the sandbox minimizes idle resource overhead, allowing dense container packing within the 5.0 GiB cgroup memory ceiling.
+
 
