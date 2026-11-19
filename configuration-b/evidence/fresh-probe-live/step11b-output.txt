@@ -1,0 +1,6 @@
+# Fresh probe phase 2 — Step 11b output (verbatim from user, 2026-11-19 13:56 IST)
+/proc/net/route: ONLY lo (Destination 00000000, Gateway 00000000, Flags 0001, Mask 00000000)
+/proc/net/dev: ONLY lo (855459 bytes RX/TX, 3621 packets)
+/etc/hosts: 127.0.0.1 localhost; ::1 localhost; 169.254.169.254 metadata.google.internal metadata; 8.8.8.8 dns.google; 2001:4860:4860::8888 dns.google
+Listening TCP: 0.0.0.0:5901 (RFB), 127.0.0.1:12345 (UNIDENTIFIED), 0.0.0.0:8080 (API daemon), 127.0.0.1:42029 (UNIDENTIFIED, ephemeral-range), tcp6 :::5901
+# Calibration: the network namespace is LOOPBACK-ONLY — no eth0/veth, no gateway, default route points at lo. That is the architectural reason egress is disabled (not just a policy statement). Only loopback listeners are reachable; the host must reach the API/RFB/DNS from outside the netns. GCP fingerprint: 169.254.169.254 metadata.google.internal in /etc/hosts. Two unidentified listeners: 12345 and 42029 (no claim — could be harness internals). 8080 = API ✓, 5901 = RFB ✓.

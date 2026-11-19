@@ -1,0 +1,17 @@
+# Fresh probe, live session — Step 3 output (verbatim from user, 2026-11-19 12:52 IST)
+/tmp
+  fsync SUCCESS
+  flock SUCCESS
+  O_EXCL ENFORCED (FileExistsError)
+  os.replace SUCCESS
+  mkfifo_nonblock SUCCESS
+  inotify fd=3 wd=1 errno=0
+/working_dir
+  fsync SUCCESS
+  flock SUCCESS
+  O_EXCL ENFORCED (FileExistsError)
+  os.replace SUCCESS
+  mkfifo_nonblock SUCCESS
+  inotify fd=3 wd=1 errno=0
+# Calibration vs v1 bundle (track1 posix_semantics): IDENTICAL on both dirs, including inotify fd=3 wd=1 errno=0.
+# Key: fsync SUCCEEDS on /working_dir — Variant B signature (gVisor 9p: FAILED EOPNOTSUPP 95).

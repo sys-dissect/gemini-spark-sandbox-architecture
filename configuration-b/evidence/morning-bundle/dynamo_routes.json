@@ -1,0 +1,74 @@
+{
+  "has_dynamo_exec": true,
+  "routes": [
+    {
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "path": "/openapi.json",
+      "name": "openapi",
+      "include_in_schema": false
+    },
+    {
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "path": "/docs",
+      "name": "swagger_ui_html",
+      "include_in_schema": false
+    },
+    {
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "path": "/docs/oauth2-redirect",
+      "name": "swagger_ui_redirect",
+      "include_in_schema": false
+    },
+    {
+      "methods": [
+        "GET",
+        "HEAD"
+      ],
+      "path": "/redoc",
+      "name": "redoc_html",
+      "include_in_schema": false
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/execute_bash",
+      "name": "execute_bash_script",
+      "include_in_schema": true
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/execute_python",
+      "name": "execute_python_script",
+      "include_in_schema": true
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/save_file",
+      "name": "save_file",
+      "include_in_schema": true
+    },
+    {
+      "methods": [
+        "POST"
+      ],
+      "path": "/fetch_file",
+      "name": "fetch_file",
+      "include_in_schema": true
+    }
+  ],
+  "daemon_sys_modules_count": 475
+}

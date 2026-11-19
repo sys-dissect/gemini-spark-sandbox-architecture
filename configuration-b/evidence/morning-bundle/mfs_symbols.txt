@@ -1,0 +1,211 @@
+        <code>--census_experimental_trace_sampling_mask = $0</code>.</p>
+ .learning.gemini.memory.Snapshot"
+ based on the flag --streamz_default_readschedules_delay 
+ due to --streamz_min_poll_period_ms: 
+ due to --streamz_write_traffic_class_override: 
+ or --census_log_size_in_mb=
+! This validation is turned on by `--rpc_use_rpc_security_policy`; you must configure a valid RpcSP to pass it. To do so, either ensure this RPC service is covered by `--rpc_security_policy_bundles` and link in `//security/context/public/validation:rpc_security_policy_bundle_flags`, or manually set a security checker following instructions from go/rpcsp2-new-service-stubby. Covered services: 
+!com.google.learning.gemini.memory
+!com.google.learning.gemini.memoryB
+%.learning.gemini.memory.SearchRequest
+&.learning.gemini.memory.SearchResponse"
+'. Check that this key does not appear in --census_default_tags.
+'.learning.gemini.memory.GetDreamRequest
+'.learning.gemini.memory.GetGroupRequest
+(.learning.gemini.memory.GetMemoryRequest
+(credentials-eng): --rpc_use_creds_policy requires --rpc_set_security_context (or legacy --rpc_propagate_security_context) to be set.
+).learning.gemini.memory.CloneGroupRequest
+).learning.gemini.memory.ListDreamsRequest
+).learning.gemini.memory.ListGroupsRequest
+).learning.gemini.memory.StartDreamRequest
+*.learning.gemini.memory.CreateGroupRequest
+*.learning.gemini.memory.DeleteGroupRequest
+*.learning.gemini.memory.FinishDreamRequest
+*.learning.gemini.memory.GetSnapshotRequest
+*.learning.gemini.memory.ListDreamsResponse"
+*.learning.gemini.memory.ListGroupsResponse"
+*.learning.gemini.memory.UpdateGroupRequest
++.learning.gemini.memory.CreateMemoryRequest
++.learning.gemini.memory.DeleteMemoryRequest
++.learning.gemini.memory.ListMemoriesRequest
++.learning.gemini.memory.UpdateMemoryRequest
+,.learning.gemini.memory.ListMemoriesResponse"
+,.learning.gemini.memory.ListSnapshotsRequest
+--census_enable_per_target_stubby_stats
+--census_log_max_size_in_mb=
+--dapper_enable_background_tracing is incompatible with --use_census_requestz. Only one of these flags can be true.
+--loas_auth_server_app_ports
+--loas_auth_server_num_ports
+--rpc_use_bundled_rpc_security_policy
+--rpc_use_creds_policy
+--rpc_use_rpc_security_policy
+--streamz_servers with non-default value.
+-.learning.gemini.memory.CreateSnapshotRequest
+-.learning.gemini.memory.ListSnapshotsResponse"
+..learning.gemini.memory.RestoreSnapshotRequest
+.learning.gemini.memory.Dream
+.learning.gemini.memory.Dream"
+.learning.gemini.memory.DreamB
+.learning.gemini.memory.Group
+.learning.gemini.memory.Group"
+.learning.gemini.memory.GroupB
+.learning.gemini.memory.Memory"
+.learning.gemini.memory.MemoryB
+/.learning.gemini.memory.BatchGetMemoriesRequest
+0.learning.gemini.memory.BatchGetMemoriesResponse"
+2 .learning.gemini.memory.ClientId
+2 .learning.gemini.memory.ClientId:
+2 .learning.gemini.memory.ClientIdB
+2 .learning.gemini.memory.Snapshot
+2 .learning.gemini.memory.SnapshotB
+2".learning.gemini.memory.StorageRefB
+2$.learning.gemini.memory.DreamOutcomeB
+2'.learning.gemini.memory.RequestMetadata"
+2).learning.gemini.memory.FinishDreamActionB
+2*.learning.gemini.memory.GroupBackendConfigB
+2*.learning.gemini.memory.StorageBackendType
+2*.learning.gemini.memory.StorageBackendType*
+2*.learning.gemini.memory.StorageBackendTypeB
+2+.learning.gemini.memory.CreateMemoryRequestB
+2+.learning.gemini.memory.DeleteMemoryRequestB
+2+.learning.gemini.memory.UpdateMemoryRequestB
+2,.learning.gemini.memory.SearchResponse.Match
+2.learning.gemini.memory.BatchCreateMemoriesRequest
+2.learning.gemini.memory.BatchDeleteMemoriesRequest
+2.learning.gemini.memory.BatchUpdateMemoriesRequest
+23.learning.gemini.memory.StorageRef.MemoryServiceRefH
+27.learning.gemini.memory.ClientRegistry.ClientPermission
+2>.learning.gemini.memory.GroupBackendConfig.MemoryServiceConfigH
+3.learning.gemini.memory.BatchCreateMemoriesResponse"
+3.learning.gemini.memory.BatchUpdateMemoriesResponse"
+<a title='Writing to Monarch is suppressed via --streamz_suppress_writing_metrics. Only appears on /streamz page, not collected by Monarch.'>suppressed from write</a>
+Base 2 logarithm of the number of CensusHandles to cache in the RPC server CensusHandle cache (if enabled via --census_rpc_handle_cache_type).
+Cannot combine --http_use_rpc_security_policy with --rpc_use_creds_policy
+Cannot combine --rpc_use_rpc_security_policy with --rpc_use_creds_policy
+Census CPU stats do not fully support this system, and will operate in a degraded state as if --census_stuck_pc_threshold=0.
+Check out the --streamz_preset_roots_base64 flag.
+Comma-separated list of resource IDs for which user-defined sink records will be tagged with experiment IDs. Experiment IDs will be sampled and propagated from servers that set --census_enable_upstream_experiment_id_monitoring to true. See go/experiment-sliced-census-tpu-metrics for more details.
+DEPRECATED: DO NOT ADD NEW USAGES OF THIS FLAG. Use go/rpcsp-label-enforcement instead, and see go/rpcsp-http for information on migrating off of experimental HTTP support to the new feature. If set to true, RpcSecurityPolicy will be enforced on HTTP requests. HTTP enforcement uses the same policy as --rpc_use_rpc_security_policy; thus, HTTP mappings should be specified as part of the policy defined by either --rpc_security_policy_initial, --rpc_security_policy_file, or pushed by CDPush. The implementation (//security/context/public/validation:rpc_security_policy_flags) must be linked into the binary or server initialization will CHECK-fail. If set to false, RpcSecurityPolicy will not be enforced for HTTP requests, even if policy-specification flags are set.
+Deprecated: should instead remove use of ManuallySampledMetrics, or set --streamz_servers to the empty string.
+Disabling Census C++ CPU profiling because the Census Go library is linked into this binary and is configured to manage profiling. To re-enable Census C++ CPU profiling, set --census_disable_go_profile_handler=true. To suppress this warning, explicitly set --census_disable_go_profile_handler=false. See b/290224461 for more info.
+Fully-specified path to a filename from which the app library should read the cookie. If set, overrides all other app cookie related flags. The empty string will simply leave the default behavior (see --loas_app_cookie_dir).
+If --census_streamz_export_per_target_stats is set to true but task numbers are not recorded, export this task number in streamz. Normally not set. Delta_aggregators set it to their own task number if running under borglet.
+If set to true, allows the use insecure-shared-user by cookie-less accounts in prod.  When this flag is true, users can become insecure-shared-user by setting GOOGLE_LOAS_REQUESTED_ROLE="insecure-shared-user" or by starting with the flag --loas_default_requested_role="insecure-shared-user".
+If set to true, incoming RPCs will be checked against a policy configured using flags in google3/security/context/internal/validation/policy_enforcer_from_flags.cc (subject to --rpc_darklaunch_rpc_security_policy_max_qps), or an empty policy if those flags are not set. However, the resulting validated SecurityContext will not be installed and errors will not interrupt RPC processing. As metrics are still recorded with this flag on, it is useful for collecting data for policy generation or testing the effect of a new RpcSecurityPolicy. This flag can be combined with --rpc_use_rpc_security_policy to enforce one policy while dark-launching another (specified using darklaunch-specific flags). The implementation (//security/context/public/validation:rpc_security_policy_flags) must be linked into the binary or server initialization will CHECK-fail
+If set to true, the validated SecurityContext produced by RpcSecurityPolicy is installed as the current SecurityContext when the request handler is run. This flag has no effect unless --rpc_use_rpc_security_policy and --rpc_set_security_context are both true.
+Invalid value for --streamz_readschedules_traffic_class_initial: 
+Invalid value for --streamz_readschedules_traffic_class_normal: 
+Kill switch for b/525615019. If true, --census_memory_accounting_enabled defaults to true in binaries that link the Census Go library together with //stats/census/go/disableprofiler. Set to false to restore the previous default (false). Only takes effect at process startup; set it on the command line or in the job config.
+Length of --loas_auth_server_app_ports must equal value of 
+Looking for per target stats? Enable the --census_enable_per_target_stubby_stats flag. This will have a large performance cost.
+Omit PostQuantumParameter in ClientInit when accepted resumption family id(s) is presented in ClientInit. Requires --loas2_omit_pq_key_enabled_clusters to be set to * or include the current cluster.
+Omit PostQuantumParameter in ClientInit when server ticket(s) is presented in ClientInit. Requires --loas2_omit_pq_key_enabled_clusters to be set to * or include the current cluster.
+Outstanding RPCs limited by --streamz_max_rpcs_allowed.
+Probability of (1/layer_local_sampling_period) that any span (root or non-root) is layer local sampled. This flag and --dapper_enable_layer_local_sampling must be set on the entry point jobof the propagation layer (i.e. the AFE) to initiate layer local sampling. See go/dapper-layer-local-sampling-propagation for details.
+Takeoff HPKE public key path (--loas2_takeoff_hpke_path) is empty.
+The maximum byte size that may be exported by a Streamz metric. If higher, this will be logged, and data will be truncated if --streamz_suppress_huge_metrics=true.
+The maximum number of cells that may be exported by a Streamz metric. Metrics exceeding the limit will be logged, and if --streamz_suppress_huge_metrics=true, cells will be discarded.
+The parsed value of the '--streamz_preset_roots_base64' flag.
+Time interval that describes how often mappings of RPCs to profiling-only-census-tags get garbage collected during cpu profiling when --census_enable_cpu_profiler_rpc_filter is true.
+Unpacked content of the '--streamz_preset_roots_base64' flag: 
+Whether automatic sampling of metrics should use the internal Streamz protocol instead of the legacy Streamz protocol.  May be implicitly overridden if not explicitly set or --streamz_announce_roots=false.  Do not use this flag: use --streamz_announce_roots instead.
+Whether or not to enable background tracing annotations for Dapper (go/bg-trace). This flag has no effect if --dapper_enable_background_tracing is false.
+Whether to enable CPU accounting in tests provided --census_cpu_accounting_enabled is also true. Until we can make the default for this flag be true (see b/30511309) and remove the flag, it can be used to enable CPU accounting in tests, which is otherwise disabled.  If one sets this flag at runtime, it should be done before Census initializes, either by setting the flag variable before InitGoogle runs, or in a module initializer that is sequenced before the census module initializer.  Otherwise, changing the flag will have no effect.
+[streamz] --streamz_default_root_labels and 
+[streamz] Invalid value for --streamz_write_traffic_class_override: 
+learning.gemini.memory
+learning.gemini.memory.BatchCreateMemoriesRequest.parent
+learning.gemini.memory.BatchCreateMemoriesRequestparent
+learning.gemini.memory.BatchDeleteMemoriesRequest.parent
+learning.gemini.memory.BatchDeleteMemoriesRequestparent
+learning.gemini.memory.BatchGetMemoriesRequest.names
+learning.gemini.memory.BatchGetMemoriesRequest.parent
+learning.gemini.memory.BatchGetMemoriesRequestparentnames
+learning.gemini.memory.BatchUpdateMemoriesRequest.parent
+learning.gemini.memory.BatchUpdateMemoriesRequestparent
+learning.gemini.memory.ClientRegistry.ClientPermission.allowed_mdb_groups
+learning.gemini.memory.ClientRegistry.ClientPermission.allowed_users
+learning.gemini.memory.ClientRegistry.ClientPermissionallowed_usersallowed_mdb_groups
+learning.gemini.memory.CloneGroupRequest.group_id
+learning.gemini.memory.CloneGroupRequest.parent
+learning.gemini.memory.CloneGroupRequest.source
+learning.gemini.memory.CloneGroupRequestparentsourcegroup_id
+learning.gemini.memory.CreateGroupRequest.group_id
+learning.gemini.memory.CreateGroupRequest.parent
+learning.gemini.memory.CreateGroupRequestparentgroup_id
+learning.gemini.memory.CreateMemoryRequest.memory_id
+learning.gemini.memory.CreateMemoryRequest.parent
+learning.gemini.memory.CreateMemoryRequestparentmemory_id
+learning.gemini.memory.CreateSnapshotRequest.parent
+learning.gemini.memory.CreateSnapshotRequestparent
+learning.gemini.memory.DeleteGroupRequest.name
+learning.gemini.memory.DeleteGroupRequestname
+learning.gemini.memory.DeleteMemoryRequest.name
+learning.gemini.memory.DeleteMemoryRequestname
+learning.gemini.memory.Dream.description
+learning.gemini.memory.Dream.name
+learning.gemini.memory.Dreamnamedescription
+learning.gemini.memory.FinishDreamRequest.name
+learning.gemini.memory.FinishDreamRequestname
+learning.gemini.memory.GetDreamRequest.name
+learning.gemini.memory.GetDreamRequestname
+learning.gemini.memory.GetGroupRequest.name
+learning.gemini.memory.GetGroupRequestname
+learning.gemini.memory.GetMemoryRequest.name
+learning.gemini.memory.GetMemoryRequestname
+learning.gemini.memory.GetSnapshotRequest.name
+learning.gemini.memory.GetSnapshotRequestname
+learning.gemini.memory.Group.description
+learning.gemini.memory.Group.name
+learning.gemini.memory.Group.prompt
+learning.gemini.memory.Group.readers
+learning.gemini.memory.Group.writers
+learning.gemini.memory.GroupBackendConfig.MemoryServiceConfig.application_id
+learning.gemini.memory.GroupBackendConfig.MemoryServiceConfigapplication_id
+learning.gemini.memory.GroupService
+learning.gemini.memory.Groupnamedescriptionpromptreaderswriters
+learning.gemini.memory.ListDreamsRequest.page_token
+learning.gemini.memory.ListDreamsRequest.parent
+learning.gemini.memory.ListDreamsRequestparentpage_token
+learning.gemini.memory.ListDreamsResponse.next_page_token
+learning.gemini.memory.ListDreamsResponsenext_page_token
+learning.gemini.memory.ListGroupsRequest.page_token
+learning.gemini.memory.ListGroupsRequest.parent
+learning.gemini.memory.ListGroupsRequestparentpage_token
+learning.gemini.memory.ListGroupsResponse.next_page_token
+learning.gemini.memory.ListGroupsResponsenext_page_token
+learning.gemini.memory.ListMemoriesRequest.page_token
+learning.gemini.memory.ListMemoriesRequest.parent
+learning.gemini.memory.ListMemoriesRequest.sync_token
+learning.gemini.memory.ListMemoriesRequestparentpage_tokensync_token
+learning.gemini.memory.ListMemoriesResponse.next_page_token
+learning.gemini.memory.ListMemoriesResponse.next_sync_token
+learning.gemini.memory.ListMemoriesResponsenext_page_tokennext_sync_token
+learning.gemini.memory.ListSnapshotsRequest.page_token
+learning.gemini.memory.ListSnapshotsRequest.parent
+learning.gemini.memory.ListSnapshotsRequestparentpage_token
+learning.gemini.memory.ListSnapshotsResponse.next_page_token
+learning.gemini.memory.ListSnapshotsResponsenext_page_token
+learning.gemini.memory.Memory.description
+learning.gemini.memory.Memory.mime_type
+learning.gemini.memory.Memory.name
+learning.gemini.memory.Memory.tags
+learning.gemini.memory.MemoryService
+learning.gemini.memory.Memorynamedescriptiontagsmime_type
+learning.gemini.memory.RestoreSnapshotRequest.name
+learning.gemini.memory.RestoreSnapshotRequestname
+learning.gemini.memory.SearchRequest.name
+learning.gemini.memory.SearchRequest.parents
+learning.gemini.memory.SearchRequest.query
+learning.gemini.memory.SearchRequestparentsqueryname
+learning.gemini.memory.SearchResponse.Match.description
+learning.gemini.memory.SearchResponse.Match.name
+learning.gemini.memory.SearchResponse.Matchnamedescription
+learning.gemini.memory.Snapshot.description
+learning.gemini.memory.Snapshot.name
+learning.gemini.memory.Snapshotnamedescription
+learning.gemini.memory.StartDreamRequest.dream_id
+learning.gemini.memory.StartDreamRequest.parent
+learning.gemini.memory.StartDreamRequestparentdream_id
+learning.gemini.memory.StorageRef.MemoryServiceRef.application_id
+learning.gemini.memory.StorageRef.MemoryServiceRefapplication_id

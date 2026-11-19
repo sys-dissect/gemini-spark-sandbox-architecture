@@ -1,0 +1,9 @@
+# Fresh probe, live session — Step 2 output (verbatim from user, 2026-11-19 12:46 IST)
+/tmp 4K avg 0.003 ms p95 0.004 ms | 10MB write 977.62 MB/s read 4506.13 MB/s
+/working_dir 4K avg 1.788 ms p95 2.920 ms | 10MB write 1740.99 MB/s read 6992.17 MB/s
+# Calibration vs v1 bundle (track1 io_benchmark):
+# /tmp 4K avg identical 0.003ms; p95 0.004 vs 0.014 (same band).
+# /working_dir 4K avg 1.788 vs 0.734 (2.4x slower this run); p95 2.920 vs 2.993 (near-identical).
+# 10MB write slower this run (/tmp 978 vs 1607; /working_dir 1741 vs 3389); 10MB read 3-4x faster (/tmp 4506 vs 1479; /working_dir 6992 vs 1827).
+# Read is page-cache in both runs (v1 script reads right after writing); variance is host load / cache state on shared infra.
+# Conclusion UNCHANGED: Variant B. 4K on XFS ~1-3ms vs 33ms on gVisor 9p; throughputs GB/s, not 9p's 175 MB/s.

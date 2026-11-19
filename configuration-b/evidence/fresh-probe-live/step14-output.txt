@@ -1,0 +1,8 @@
+# Fresh probe phase 2 — Step 14 output (verbatim from user, 2026-11-19 14:04 IST)
+# readlink /proc/1/cwd /proc/1/root: no output (nothing returned before the first ---)
+ls: cannot open directory '/proc/1/fd': Permission denied
+/tmp/shell.sock: srw-rw-rw- spark spark, Nov 19 04:52
+/tmp/.X11-unix/X1: srwxrwxrwx root root, Nov 19 04:52
+DISPLAY= (empty in the shell)
+Listening sockets with inodes: 0.0.0.0:5901 inode 19543; 127.0.0.1:12345 inode 14424; 0.0.0.0:8080 inode 19066; 127.0.0.1:42029 inode 12027; tcp6 :::5901 inode 19544
+# Calibration: /proc/1/fd is Permission denied even though PID 1 runs as spark (same UID as the reader) — most plausibly the AppArmor profile "ace-workload" blocking /proc introspection; the daemon's internals are not inspectable from the shell. DISPLAY empty in the shell (GUI work needs DISPLAY=:1 set explicitly). Listener inode chronology: 42029 (12027) and 12345 (14424) were bound BEFORE the API (19066) and VNC (19543/44) — early-startup services, not the daemon's; attribution still open (fd inspection blocked). 5901 v4/v6 inodes adjacent = same process (TigerVNC) ✓.

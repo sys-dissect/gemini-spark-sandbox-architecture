@@ -1,0 +1,6 @@
+# Fresh probe, live session — Step 8d output (verbatim from user, 2026-11-19 13:35 IST)
+HTTP/1.1 200 OK, server uvicorn, date 08:05:17 GMT
+{"msg_out":"BaseHTTPMiddleware block_localhost\n","msg_err":"","exit_status_int":0}
+# Calibration: dispatch function is literally named block_localhost, registered on BaseHTTPMiddleware — CONFIRMED live, by name, without disassembly.
+# Combined with v1 disassembly (same container, same logic), the middleware question is fully closed.
+# PROBE COMPLETE except docker.sock (Neon refused; needs Spark default model or stays untested).

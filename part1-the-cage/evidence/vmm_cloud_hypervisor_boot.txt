@@ -1,0 +1,102 @@
+# Configuration B — VMM Identity, Boot Parameters, CPU, Clocksource & Virtio Bus
+# Session Date: 2026-11-19 (session-scrubbed)
+
+=== uname -a ===
+Linux ace 6.12.105+ #1 SMP Sat Sep 19 19:37:41 UTC 2026 x86_64 GNU/Linux
+
+=== /sys/class/dmi/id/* ===
+sys_vendor: Cloud Hypervisor
+product_name: cloud-hypervisor
+product_version:
+bios_vendor: cloud-hypervisor
+bios_version: 0
+board_name: (No such file or directory)
+
+=== /proc/cmdline ===
+root=/dev/pmem0p3 systemd.gpt_auto=0 console=ttyS0 panic=-1 no_timer_check noreplace-smp rootwait ro noresume loglevel=4 security=apparmor virtio_net.napi_tx=1 nmi_watchdog=0 csm.disabled=1 sysctl.kernel.kexec_load_disabled=1 sysctl.vm.compaction_proactiveness=0 systemd.hostname=ace
+
+=== /sys/devices/system/clocksource/clocksource0/ ===
+current_clocksource: tsc
+available_clocksource: tsc kvm-clock
+
+=== lscpu ===
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 57 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  2
+On-line CPU(s) list:                     0,1
+Vendor ID:                               GenuineIntel
+Model name:                              Intel(R) Xeon(R) 6985P-C
+CPU family:                              6
+Model:                                   173
+Thread(s) per core:                      1
+Core(s) per socket:                      2
+Socket(s):                               1
+Stepping:                                1
+BogoMIPS:                                6000.00
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq dtes64 ssse3 fma cx16 pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves avx_vnni avx512_bf16 wbnoinvd arat avx512vbmi umip pku ospke waitpkg avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid bus_lock_detect cldemote movdiri movdir64b fsrm md_clear serialize tsxldtrk avx512_fp16 flush_l1d arch_capabilities
+Hypervisor vendor:                       KVM
+Virtualization type:                     full
+L1d cache:                               48 KiB (1 instance)
+L1i cache:                               64 KiB (1 instance)
+L2 cache:                                2 MiB (1 instance)
+L3 cache:                                504 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0,1
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS Not affected; BHI BHI_DIS_S
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Mitigation; TSX disabled
+Vulnerability Vmscape:                   Not affected
+
+=== /sys/bus/virtio/devices/ ===
+virtio0: vendor=0x1af4 device=0x0004 driver=virtio_rng
+virtio1: vendor=0x1af4 device=0x001b driver=virtio_pmem
+virtio2: vendor=0x1af4 device=0x0013 driver=vmw_vsock_virtio_transport
+virtio3: vendor=0x1af4 device=0x0005 driver=virtio_balloon
+virtio4: vendor=0x1af4 device=0x0002 driver=virtio_blk
+virtio5: vendor=0x1af4 device=0x0002 driver=virtio_blk
+virtio6: vendor=0x1af4 device=0x0002 driver=virtio_blk
+virtio7: vendor=0x1af4 device=0x0002 driver=virtio_blk
+
+=== /sys/block/ ===
+vda: sectors=10485760 ro=0 rotational=1 write_cache='write back' scheduler='none [mq-deadline] '
+vdb: sectors=41943040 ro=0 rotational=1 write_cache='write back' scheduler='none [mq-deadline] '
+vdc: sectors=104857600 ro=1 rotational=1 write_cache='write back' scheduler='none [mq-deadline] '
+vdd: sectors=20971520 ro=0 rotational=1 write_cache='write back' scheduler='none [mq-deadline] '
+pmem0: sectors=18878464 ro=0 rotational=0 write_cache='write back' scheduler='?'
+dm-0: sectors=10477568 ro=0 rotational=1 write_cache='write back' scheduler='?'
+dm-1: sectors=104857600 ro=0 rotational=1 write_cache='write back' scheduler='?'
+
+=== /proc/modules ===
+dm_snapshot 61440 2 - Live 0x0000000000000000
+dm_raid 53248 0 - Live 0x0000000000000000
+raid456 172032 1 dm_raid, Live 0x0000000000000000
+raid1 49152 0 - Live 0x0000000000000000
+async_raid6_recov 12288 1 raid456, Live 0x0000000000000000
+async_pq 12288 1 raid456, Live 0x0000000000000000
+async_memcpy 12288 1 raid456, Live 0x0000000000000000
+raid6_pq 118784 3 raid456,async_raid6_recov,async_pq, Live 0x0000000000000000
+virtio_balloon 24576 0 - Live 0x0000000000000000
+ptp_kvm 12288 0 - Live 0x0000000000000000
+xt_REDIRECT 12288 1 - Live 0x0000000000000000
+iptable_nat 12288 1 - Live 0x0000000000000000
+nf_nat 53248 2 xt_REDIRECT,iptable_nat, Live 0x0000000000000000
+virtiofs 32768 0 - Live 0x0000000000000000
+fuse 225280 2 virtiofs, Live 0x0000000000000000
+virtio_pmem 12288 1 - Live 0x0000000000000000
+nd_virtio 12288 1 virtio_pmem, Live 0x0000000000000000
+virtio_blk 28672 4 - Live 0x0000000000000000

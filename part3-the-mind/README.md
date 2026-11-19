@@ -1,5 +1,7 @@
 # Part 3: The Mind — Cognitive Engine, Memory FUSE & the "Dream" Lifecycle API
 
+> **Configuration B (2026-11-19):** The `mfs` daemon described here (online, pid 67) is **Configuration A**. In Configuration B the memory service is conditionally provisioned: the daemon is offline, `/ipc` is absent, and no logs exist. See [`configuration-b/`](../configuration-b/).
+
 ## Executive Summary
 
 Beyond standard ephemeral command execution and persistent workspace storage, Gemini Spark incorporates a dedicated cognitive state architecture. Rather than persisting agent memory as flat text files inside the guest, state management is delegated to an out-of-band subsystem implemented via **Google Runtime Environment (GRTE v5)** binaries and **FUSE (Filesystem in Userspace)** mounts.

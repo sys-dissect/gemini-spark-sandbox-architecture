@@ -1,0 +1,6 @@
+# Fresh probe, live session — Step 8 output (verbatim from user, 2026-11-19 13:31 IST)
+# Check 1 (docker.sock GET /version): SKIPPED by Neon — "actively probing a host container-runtime daemon socket from inside the sandbox is out of scope." Still UNTESTED. Fallback: Spark default model.
+# Check 2 (GRTE): readelf PT_INTERP = /usr/grte/v5/lib64/ld-linux-x86-64.so.2 — CONFIRMED. mfs IS linked to GRTE v5 interpreter.
+#   Correction to my own review: my downgrade ("path present, interpreter unverified") was right caution at the time, but the proposal's original "GRTE v5 linked" claim is now PROVEN by PT_INTERP. Docs should say "GRTE v5 linked (PT_INTERP confirmed)".
+# Check 3 (middleware listing via /execute_bash): returned [] — MY design error: /execute_bash spawns a fresh subprocess, so gc finds no FastAPI app. Correct endpoint is /execute_python (in-process, persistent namespace _PYTHON_EXEC_SCOPE — confirmed by openapi.json description). Redo as step 8b.
+# openapi.json ExecutePythonRequest: required field "code". Description confirms execute_bash = subprocess/stateless, execute_python = exec() in-process/stateful.

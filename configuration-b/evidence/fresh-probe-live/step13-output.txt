@@ -1,0 +1,7 @@
+# Fresh probe phase 2 — Step 13 output (verbatim from user, 2026-11-19 14:02 IST)
+timeit sum(i*i for i in range(1000000)): 26.4 ms/loop (best of 3)
+memset 256MB: 1.721 s, 156 MB/s
+memcpy 256MB: 0.042 s, 6366 MB/s
+/tmp fsync 4K: mean 0.003 ms, p95 0.004 ms, max 0.028 ms
+/working_dir fsync 4K: mean 4.152 ms, p95 3.331 ms, max 84.263 ms
+# Calibration: CPU 26.4ms is a new baseline (no Variant A CPU number to compare). memset 156 MB/s is a FLAWED measure — my snippet builds a second 256MB temp object (b'\x00' * n), so the time is allocation-dominated; the memcpy 6.4 GB/s is the real memory-bandwidth figure (plausible for a 2-vCPU shared-host VM). fsync: tmpfs ~free (0.003ms); XFS ~3-4ms typical, one 84ms outlier (mean 4.152 > p95 3.331 — the outlier pulls the mean). fsync adds ~2.4ms over the no-fsync 4K write (step 2: 1.788ms). On Variant A fsync FAILED outright, so any cost is new.

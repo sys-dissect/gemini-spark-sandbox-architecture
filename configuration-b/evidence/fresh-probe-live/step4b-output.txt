@@ -1,0 +1,4 @@
+# Fresh probe, live session — Step 4b output (verbatim from user, 2026-11-19 13:19 IST)
+prctl dumpable: 1
+double-fork grandchild ppid: 1
+# Calibration vs v1 bundle: prctl_dumpable 1 ✓, double_fork_grandchild_ppid 1 ✓. Step 4 complete.

@@ -1,0 +1,8 @@
+# Fresh probe, live session — Step 7 output (verbatim from user, 2026-11-19 13:29 IST)
+# mfs status: Daemon offline, Root ~/memory, Logs ~/.gemini/jetski/memory/logs/memoryfs.INFO.log, default ~/memory/default unavail — IDENTICAL to v1.
+# mfs --help: "Jetski Memory FUSE CLI for Sandbox" + full command set — matches v1.
+# ls /ipc: No such file or directory — MISSING ✓ (matches v1).
+# ~/.gemini/jetski/memory/: contains ONLY config.txtpb (281 bytes, Nov 19 07:58). logs/ does NOT exist.
+# strings count: 211 — IDENTICAL to v1 (same head lines: HTML fragments, flag descriptions).
+# node v18.20.4, npm 9.2.0, fc-list 626 — IDENTICAL to v1.
+# Calibration: mfs logs-uninitialized now TIER 1 CONFIRMED (was unverified in Neon's §6 — v1 telemetry had no ls check; now proven: no logs/ dir, only config.txtpb). No daemon socket either (only config.txtpb in the memory dir).

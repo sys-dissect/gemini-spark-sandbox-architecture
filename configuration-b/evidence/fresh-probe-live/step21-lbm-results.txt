@@ -1,0 +1,17 @@
+# LBM vortex-street run results (from user's screenshot of Neon, 2026-11-19 16:41 IST)
+# Run used the ORIGINAL 6000-step prompt (sent before Dio's assessment) — the St fix was NOT applied.
+# Results (Neon summary):
+# - Grid 420x120 D2Q9 TRT (TRT collision, not BGK — valid), R=12 at (90,60), 6000 steps.
+# - Wall time 46.342 s. Throughput 6.53 MLUPS. Peak RSS 86.75 MiB (88,832 KiB).
+# - Measured St = 0.1831 (f = 0.00061...), matches theoretical 0.18-0.19. Vorticity image shows "Step 4564 / 6000 | St=0.1831". FFT spectrum panel shows a peak at ~0.18.
+# - GUI Chromium (DISPLAY=:1): window 0x400002, geometry 1280x900+40+40, captured via ffmpeg -f x11grab, URL http://127.0.0.1:3...
+# - BUT the Chromium screenshot shows a BLOCKED page: "This page is blocked. Your organization doesn't allow you to view this site." + banner "You are using an unsupported command-line flag: --no-sandbox. Stability and security will suffer."
+# Calibration:
+# - St = 0.1831 PASSED. Dio's FFT-window concern did NOT materialize (the implementer evidently used a robust peak method / interpolation). The short window (~2.1 periods) was a valid concern in principle but the measurement came out right. Own it.
+# - MLUPS 6.53 is BELOW the 15-40 range. Implementation overhead, NOT a VM limit: 6.53 MLUPS x ~144 B/update = ~940 MB/s, far below the measured 5.4-6.4 GB/s memory bandwidth; the FP64 GEMM (156 GFLOP/s) proves the CPU is fast. A straightforward NumPy TRT implementation with per-step diagnostics is overhead-bound. The VM is fine.
+# - Wall time 46.342s is consistent (302.4M updates / 46.342 = 6.53 MLUPS). Peak RSS 86.75 MiB is as expected (small state).
+# - GUI mechanics WORKED (window mapped, geometry correct, ffmpeg screenshot captured). BUT the report was BLOCKED by the managed Chrome policy (/etc/chromium/policies/managed/chrome_policy.json — seen in the verbose log). The "non-blank rendered report" check FAILED: chromium_render.png shows a blocked page, not the report. NEW FINDING: the managed policy blocks localhost http pages. The policy file contents are worth reading (read-only) to document exactly what is blocked.
+# - --no-sandbox was used (banner) though the task didn't ask for it — Neon added it. Not necessary (step-6b GUI run worked without it), harmless.
+# - Window ID 0x400002 is the same as step 6b — likely X11 ID reuse after the earlier window was destroyed. Not significant.
+# Overall: capabilities check mostly PASSED (sim correct, St correct, storage, loopback, GUI mechanics, screenshot). Two findings: (a) MLUPS below range = implementation, not VM; (b) managed Chrome policy blocks localhost pages = new constraint on the display pipeline.
+# Follow-up worth doing: read /etc/chromium/policies/managed/chrome_policy.json (read-only) to document the blocklist.
