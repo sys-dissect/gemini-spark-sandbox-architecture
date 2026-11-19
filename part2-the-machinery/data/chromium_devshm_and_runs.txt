@@ -1,0 +1,50 @@
+# Configuration B — Chromium Configuration, /dev/shm Threshold & GUI/Headless Probes
+# Session Date: 2026-11-19 (session-scrubbed; /etc/chromium.d/apikeys omitted)
+
+=== Binary & Version ===
+/usr/bin/chromium
+Chromium 156.0.8078.73 built on Debian GNU/Linux 12 (bookworm)
+
+=== /etc/chromium.d/dev-shm ===
+shm_avail=$(findmnt -bnr -o avail -T /dev/shm)
+
+if [ $shm_avail -lt 4080218931 ]  # 3.8 GB
+then
+	# Use $TMPDIR or /tmp instead
+	export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --disable-dev-shm-usage"
+fi
+
+=== findmnt -bnr -o avail -T /dev/shm ===
+2147483648
+
+=== GUI Run (DISPLAY=:1 chromium about:blank, 3s) — xwininfo -root -tree ===
+xwininfo: Window id: 0x51a (the root window) (has no name)
+  Root window id: 0x51a (the root window) (has no name)
+  Parent window id: 0x0 (none)
+     5 children:
+     0x400002 "about:blank - Chromium": ("chromium" "Chromium")  1265x1420+10+10  +10+10
+     0x400004 (has no name): ()  1x1+0+0  +0+0
+     0x600001 "chromium": ("chromium" "Chromium")  10x10+10+10  +10+10
+     0x400000 "Chromium clipboard": ()  10x10+-100+-100  +-100+-100
+     0x200005 "tmux": ("st-256color" "st-256color")  2244x1280+60+50  +60+50
+
+GUI stderr excerpt:
+[1700:1736:1119/075342.021417:ERROR:dbus/bus.cc:405] Failed to connect to the bus: Failed to connect to socket /run/dbus/system_bus_socket: No such file or directory
+
+=== Headless Run (timeout 10 chromium --headless --disable-gpu --dump-dom about:blank) ===
+headless exit: 124
+stdout: (empty)
+stderr tail:
+[1880:1880:1119/075358.501652:ERROR:dbus/object_proxy.cc:572] Failed to call method: org.freedesktop.DBus.NameHasOwner: object_path= /org/freedesktop/DBus: unknown error type:
+Fontconfig error: Cannot load default config file: No such file: (null)
+[1880:1880:1119/075408.246882:ERROR:content/browser/network_service_instance_impl.cc:652] Network service crashed or was terminated, restarting service.
+[1880:1880:1119/075408.263674:ERROR:content/common/zygote/zygote_communication_linux.cc:313] Failed to send GetTerminationStatus message to zygote
+[1880:1880:1119/075408.265635:ERROR:content/common/zygote/zygote_communication_linux.cc:313] Failed to send GetTerminationStatus message to zygote
+
+=== Headless Flag-Isolation Runs (timeout 6 each, about:blank) ===
+Test A (--headless=new --disable-gpu --dump-dom):
+  exit=124, stdout=(empty), stderr: Failed to send GetTerminationStatus message to zygote
+Test B (--headless --no-sandbox --disable-gpu --dump-dom):
+  exit=124, stdout=(empty), stderr: Failed to send GetTerminationStatus message to zygote
+Test C (--headless --no-sandbox --no-zygote --disable-gpu --dump-dom):
+  exit=124, stdout=(empty), stderr: D-Bus NameHasOwner / bus.cc errors only (no zygote error, still times out)

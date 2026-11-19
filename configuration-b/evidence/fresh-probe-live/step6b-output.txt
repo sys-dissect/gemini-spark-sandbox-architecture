@@ -1,0 +1,9 @@
+# Fresh probe, live session — Step 6b output (verbatim from user, 2026-11-19 13:24 IST)
+# GUI: xwininfo now 5 children — 0x400002 "about:blank - Chromium" 1265x1420+10+10, 0x400004 1x1, 0x600001 "chromium" 10x10, 0x400000 "Chromium clipboard", 0x200005 tmux.
+# GUI log: dbus errors only (no dbus daemon socket in container). No zygote errors in GUI log head.
+# Headless: exit 124 (timeout 10 — HUNG), stdout EMPTY, stderr tail: dbus errors, "Fontconfig error: Cannot load default config file", "Network service crashed or was terminated, restarting service", "zygote_communication_linux.cc:313 Failed to send GetTerminationStatus message to zygote" (x2).
+# Note: pkill -f chromium matched its own shell command line and exited -15 after xwininfo; user read the log and ran headless manually right after.
+# Calibration:
+# - Proposal §2B chromium claims (unevidenced in v1 bundle) now CONFIRMED by fresh run: GUI window 0x400002 (exact ID the proposal claimed), headless hang, zygote:313 error. Present as fresh-run findings, not v1 findings.
+# - Window ID match is likely deterministic X11 allocation (first client window), not proof the proposal had the output.
+# - dbus socket appears in v1 /proc/net/unix census but path does not resolve in container (namespace artifact) — observation only.

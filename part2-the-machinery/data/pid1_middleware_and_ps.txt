@@ -1,0 +1,44 @@
+# Configuration B — PID 1 Status, Live API Checks, Middleware & Process Inventory
+# Session Date: 2026-11-19 (session-scrubbed)
+
+=== /proc/1/status (selected fields) ===
+Name:	shell_wrapper.p
+State:	S (sleeping)
+Pid:	1
+VmSize:	  267084 kB
+VmRSS:	   40236 kB
+Threads:	2
+SigQ:	21/31691
+SigPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000001001000
+SigCgt:	00000001000044ea
+/proc/1/fd: Permission denied (from UID 1235)
+
+=== Live /tmp/shell.sock API Verification ===
+GET /openapi.json: HTTP 200, 3706 bytes ('cwd' in ExecuteBashRequest: True; /execute_python 200 content: text/plain)
+POST /execute_bash {"command":"pwd","cwd":"/tmp"}:
+{"status":"Executed shell script","stdout":"/tmp\n","stderr":"","combined_output":"/tmp\n","exit_code":0}
+POST /execute_python (FastAPI user_middleware class names):
+{"msg_out":"['FastAPI']\n['CORSMiddleware', 'BaseHTTPMiddleware']\n","msg_err":"","exit_status_int":0}
+POST /execute_python (middleware dispatch via m.options):
+{"msg_out":"BaseHTTPMiddleware block_localhost\n","msg_err":"","exit_status_int":0}
+
+=== Sockets & VNC Handshake ===
+srw-rw-rw- 1 spark spark 0 /tmp/shell.sock
+srwxrwxrwx 1 root  root  0 /tmp/.X11-unix/X1
+127.0.0.1:5901 RFB banner: b'RFB 003.008\n', security types: [1, 1] (count=1, type=1 None)
+
+=== Process State Summary & Active Daemons (ps aux) ===
+State counts: 1 R, 14 S, 54 Z (total /proc/[0-9]* at earlier sample: 67)
+Active non-zombie daemons:
+  PID 1  (spark): /usr/bin/python3 /root/shell_wrapper.py --socket_path=/tmp/shell.sock
+  PID 15 (root):  /usr/bin/Xtigervnc :1 -SecurityTypes None -geometry 2560x1440 -FrameRate 30 -AlwaysShared -SendPrimary=0 -SetPrimary=0 -localhost=0
+  PID 49 (spark): tmux new-session -d -s main -c /working_dir
+  PID 50 (spark): -bash
+  PID 53 (root):  sudo -u spark TERM=xterm-256color stterm -f DejaVu Sans Mono:pixelsize=24:antialias=true:autohint=true -g 160x44+60+50 -e tmux attach-session -t main
+  PID 68 (root):  /usr/bin/python3 -u /root/webrtc_server.py
+  PID 69 (root):  /root/vmaas_tiered_fs --sweep_only=true --pd_dir=/working_dir --ttl_enabled=true --max_ttl_enabled=true --ttl_path_scopes=tool_output_artifacts,user_uploaded_files,uploaded_files,file_generation
+  PID 71 (spark): stterm -f DejaVu Sans Mono:pixelsize=24:antialias=true:autohint=true -g 160x44+60+50 -e tmux attach-session -t main
+  PID 77 (spark): tmux attach-session -t main
+Defunct zombies reparented to PID 1: [chrome_crashpad], [chromium], [python3]

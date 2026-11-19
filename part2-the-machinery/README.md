@@ -1,5 +1,7 @@
 # Part 2: The Machinery — Binary Architecture, Daemon Lifecycle & IPC Matrix
 
+> **Configuration B (2026-11-19):** The daemon, routes, and Chromium behavior in this document describe **Configuration A**. Configuration B differs — notably the `cwd` parameter on `/execute_bash`, the undocumented `msg_out` JSON response on `/execute_python`, the headless Chromium hang, and a managed Chrome policy that blocks localhost pages. See [`configuration-b/`](../configuration-b/).
+
 ## Executive Summary
 
 Inside the sandboxed workload cell, the execution engine does not run standard systemd or an interactive shell daemon. Instead, execution and environment state are mediated through an in-memory **FastAPI/Uvicorn** application loaded at PID 1 (`/root/shell_wrapper.py` importing `/root/dynamo_exec.py`). The daemon operates under an unprivileged user context (`UID 1235`, `spark`), exposes specialized HTTP endpoints over a local Unix domain socket (`/tmp/shell.sock`), and installs custom bytecode middleware to reject all TCP requests originating from localhost.

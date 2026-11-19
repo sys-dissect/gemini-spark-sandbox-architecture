@@ -1,0 +1,11 @@
+{
+  "mfs_status": {
+    "rc": 0,
+    "stdout": "Daemon: offline\nRoot:   ~/memory\nLogs:   ~/.gemini/jetski/memory/logs/memoryfs.INFO.log\n\nNAME     MOUNTPOINT       STATUS   MODE   ENTRIES      SIZE        CACHED DIRTY\ndefault  ~/memory/default unavail  --           -         -             -     -\n",
+    "stderr": ""
+  },
+  "mfs_help": "help for \"mfs\"\n\nmfs <COMMAND>\n\nJetski Memory FUSE CLI for Sandbox\n\n status            Status and metrics for all mounts.\n search            Search memories.\n similar           Find similar memories.\n daemon            Manage memoryfs daemon.\n   start             Start the memoryfs daemon.\n   stop              Stop the memoryfs daemon.\n group             Manage memory groups.\n   create            Create a new memory group.\n   get               Get metadata for a memory group.\n   mount             Mount a memory group.\n   unmount           Unmount a memory group.\n   delete            Delete a memory group.\n   update-readers    Update readers of a memory group.\n   update-writers    Update writers of a memory group.\n sync              Forces synchronization of local group state with backend\n                   state.\n debug             Run diagnostic checks and dump debug state.\n mount             Mount configured memory groups that are not mounted yet.\n",
+  "grte_link": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+  "ipc_dir": "MISSING",
+  "mfs_symbols_count": 211
+}

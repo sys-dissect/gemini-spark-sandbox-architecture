@@ -1,0 +1,12 @@
+# Fresh probe, live session — Step 5 output (verbatim from user, 2026-11-19 13:20 IST)
+grep /proc/1/status: Name shell_wrapper.p, State S (sleeping), Pid 1, VmSize 267084 kB, VmRSS 40236 kB, Threads 2
+curl openapi.json: HTTP 200, 3706 bytes
+cwd in ExecuteBashRequest properties: True
+execute_python 200 content: {'text/plain': {'schema': {'type': 'string'}}}
+POST /execute_bash {"command":"pwd","cwd":"/tmp"}: {"status":"Executed shell script","stdout":"/tmp\n","stderr":"","combined_output":"/tmp\n","exit_code":0}
+wc -l /proc/net/unix: 107
+# Calibration vs v1 bundle:
+# - PID 1 same process (shell_wrapper.p, S, 2 threads). VmRSS 40236 vs 38768 (+1468 kB, ~4%). VmSize 267084 vs 119484 (+147600 kB, +124%) — virtual reservations up, RSS flat: address-space growth, not real memory growth. Cause unknown (server state? module loads? daemon restart?). Record as delta.
+# - openapi.json 3706 bytes (v1 file size to compare — see ls above). cwd present ✓, text/plain still declared ✓.
+# - /execute_bash cwd WORKS LIVE (first live confirmation; v1 only showed it in schema): pwd in /tmp returned /tmp, exit 0.
+# - /proc/net/unix 107 lines = 106 entries ✓ identical to v1.

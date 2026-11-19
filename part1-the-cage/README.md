@@ -1,5 +1,7 @@
 # Part 1: The Cage — Sandbox Confinement, Hypervisor Mediation & Syscall Profile
 
+> **Configuration B (2026-11-19):** A second runtime configuration (Cloud Hypervisor / Docker + XFS, not gVisor) was measured on 2026-11-19. The statements in this document describe **Configuration A** unless noted. Configuration B is documented in [`configuration-b/`](../configuration-b/).
+
 ## Executive Summary
 
 The execution substrate of Google's Gemini Spark environment is governed by **Google gVisor** (the Sentry application kernel). Rather than allowing container workloads direct execution against the host Linux kernel, gVisor acts as a user-space operating system kernel written in Go. Sentry intercepts guest syscalls, implements an emulation table for the `Linux 4.19` ABI, virtualizes internal kernel structures (such as namespaces and process descriptors) within Go memory, and mediates all external filesystem operations via Plan 9 (`9p` / Gofer) channels.

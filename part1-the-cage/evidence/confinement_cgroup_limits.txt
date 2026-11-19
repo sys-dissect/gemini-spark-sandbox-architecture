@@ -1,0 +1,90 @@
+# Configuration B — Confinement, Capabilities, Namespaces, Cgroup v2 & VM Tuning
+# Session Date: 2026-11-19 (session-scrubbed)
+
+=== Identity & Container Markers ===
+uid=1235(spark) gid=1235(spark) groups=1235(spark)
+hostname: ace
+/.dockerenv: present (-rwxr-xr-x 1 root root 0)
+/run/.containerenv: No such file or directory
+/proc/self/cgroup: 0::/
+
+=== Capabilities, Seccomp & LSM ===
+CapEff []
+CapBnd ['CHOWN', 'DAC_OVERRIDE', 'DAC_READ_SEARCH', 'FOWNER', 'FSETID', 'KILL', 'SETGID', 'SETUID', 'SETPCAP', 'LINUX_IMMUTABLE', 'NET_BIND_SERVICE', 'NET_BROADCAST', 'NET_ADMIN', 'NET_RAW', 'IPC_LOCK', 'IPC_OWNER', 'SYS_MODULE', 'SYS_RAWIO', 'SYS_CHROOT', 'SYS_PTRACE', 'SYS_PACCT', 'SYS_ADMIN', 'SYS_BOOT', 'SYS_NICE', 'SYS_RESOURCE', 'SYS_TIME', 'SYS_TTY_CONFIG', 'MKNOD', 'LEASE', 'AUDIT_WRITE', 'AUDIT_CONTROL', 'SETFCAP', 'MAC_OVERRIDE', 'MAC_ADMIN', 'SYSLOG', 'WAKE_ALARM', 'BLOCK_SUSPEND', 'AUDIT_READ', 'PERFMON', 'BPF', 'CHECKPOINT_RESTORE']
+CapInh:	0000000000000000
+CapAmb:	0000000000000000
+NoNewPrivs:	0
+Seccomp:	0
+/proc/self/attr/current: ace-workload (enforce)
+/sys/kernel/security/apparmor/profiles: No such file or directory
+/sys/kernel/security/lsm: No such file or directory
+
+=== User Namespace Maps ===
+uid_map:          0          0 4294967295
+gid_map:          0          0 4294967295
+
+=== Active Namespaces (/proc/self/ns/) ===
+cgroup -> cgroup:[4026532223]
+ipc -> ipc:[4026532221]
+mnt -> mnt:[4026532219]
+net -> net:[4026531840]
+pid -> pid:[4026532222]
+pid_for_children -> pid:[4026532222]
+time -> time:[4026531834]
+time_for_children -> time:[4026531834]
+user -> user:[4026531837]
+uts -> uts:[4026532220]
+
+=== Kernel Hardening Sysctls ===
+dmesg_restrict: 1
+kptr_restrict: 1
+unprivileged_bpf_disabled: 1
+perf_event_paranoid: 2
+yama/ptrace_scope: 1
+prctl(PR_GET_DUMPABLE): 1
+double-fork grandchild ppid: 1
+random/entropy_avail: 256
+random/poolsize: 256
+
+=== Cgroup v2 Limits & Accounting ===
+memory.max: max
+memory.current: 778256384
+memory.swap.max: max
+cpu.max: max 100000
+pids.max: 9507
+cgroup.controllers: cpuset cpu io memory hugetlb pids rdma
+cpuset.cpus.effective: 0-1
+cpu.stat: usage_usec 55756532 | user_usec 42518921 | system_usec 13237610 | nr_throttled 0 | throttled_usec 0
+
+=== /proc/meminfo & VM Memory Sysctls ===
+MemTotal:        8138460 kB
+MemFree:         6696272 kB
+MemAvailable:    7366256 kB
+SwapTotal:             0 kB
+overcommit_memory: 1
+overcommit_ratio: 50
+swappiness: 60
+dirty_ratio: 0
+dirty_background_ratio: 0
+dirty_bytes: 61440000
+dirty_background_bytes: 15360000
+dirty_expire_centisecs: 3000
+dirty_writeback_centisecs: 500
+min_free_kbytes: 67584
+vfs_cache_pressure: 100
+max_map_count: 65530
+oom_kill_allocating_task: 0
+transparent_hugepage/enabled: always [madvise] never
+hugepages: hugepages-1048576kB, hugepages-2048kB
+
+=== /proc/pressure/ (PSI) ===
+cpu:    some avg10=0.00 avg60=0.00 avg300=0.02 total=15762275 | full total=0
+memory: some avg10=0.00 avg60=0.00 avg300=0.00 total=0 | full total=0
+io:     some avg10=0.00 avg60=0.00 avg300=0.00 total=3102747 | full total=1983404
+
+=== /proc/self/limits ===
+Max open files            1048576              1048576              files
+Max stack size            8388608              unlimited            bytes
+Max locked memory         8388608              8388608              bytes
+Max pending signals       31691                31691                signals
+Max msgqueue size         819200               819200               bytes

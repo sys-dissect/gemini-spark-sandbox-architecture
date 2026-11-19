@@ -1,0 +1,15 @@
+# Fresh probe phase 2 — Step 9 output (verbatim from user, 2026-11-19 13:47 IST)
+memory.max: max
+memory.current: 778256384
+cpu.max: max 100000
+pids.max: 9507
+nproc: 2
+model name: Intel(R) Xeon(R) 6985P-C
+processor count: 2
+MemTotal: 8138460 kB, MemFree: 6696272 kB, MemAvailable: 7366256 kB, SwapTotal: 0 kB
+os-release: Debian GNU/Linux 12 (bookworm)
+/proc/self/cgroup: 0::/
+ls: cannot access '/run/.containerenv': No such file or directory
+/.dockerenv present (0 bytes, Nov 19 04:52)
+hostname: ace
+# Calibration: NO memory limit, NO CPU quota — caps are the host allocation only (2 vCPU, 7.76 GiB RAM, no swap) + pids.max 9507. Docker confirmed (/.dockerenv present, no Podman .containerenv). Cross-checks: /tmp 3.9G = 50% RAM ✓; /dev/shm 2.0G is an explicit --shm-size ✓. memory.current 742 MB. cgroup root "/" = private cgroup namespace (normal for Docker).

@@ -1,0 +1,46 @@
+# Configuration B — mfs ELF Interpreter, Directory State & Config
+# Session Date: 2026-11-19 (session-scrubbed)
+
+=== readelf -l /usr/bin/mfs | grep -i interp ===
+  INTERP         0x0000000000000350 0x0000000000000350 0x0000000000000350
+      [Requesting program interpreter: /usr/grte/v5/lib64/ld-linux-x86-64.so.2]
+   01     .interp
+   02     .interp .note.ABI-tag .note.gnu.build-id .dynsym .gnu.version .gnu.version_r .gnu.hash .dynstr .rela.dyn .relr.dyn .rela.plt .lrodata flags_help_cold .rodata google_malloc .text .init .fini google_init_cold malloc_hook .plt
+
+=== ls -la /ipc ===
+ls: cannot access '/ipc': No such file or directory
+
+=== ls -la ~/.gemini/jetski/memory/ ~/.gemini/jetski/memory/logs/ ===
+ls: cannot access '/home/spark/.gemini/jetski/memory/logs/': No such file or directory
+/home/spark/.gemini/jetski/memory/:
+total 4
+drwxr-xr-x 2 spark spark  26 Nov 19 04:52 .
+drwxr-xr-x 3 spark spark  20 Nov 19 04:52 ..
+-rw-r--r-- 1 spark spark 281 Nov 19 07:58 config.txtpb
+
+=== ~/.gemini/jetski/memory/config.txtpb ===
+# proto-file: cloud/ai/platform/agent/vmaas/memory/fuse/proto/config.proto
+# proto-message: vmaas_mfs.MemoryConfig
+
+fuse {
+  root_dir: "/home/spark/memory"
+  mounts {
+    key: "default"
+    value {
+      dumbo {
+        resource_name: "users/me/groups/default"
+      }
+    }
+  }
+}
+
+=== mfs status ===
+Daemon: offline
+Root:   ~/memory
+Logs:   ~/.gemini/jetski/memory/logs/memoryfs.INFO.log
+
+NAME     MOUNTPOINT       STATUS   MODE   ENTRIES      SIZE        CACHED DIRTY
+default  ~/memory/default unavail  --           -         -             -     -
+
+=== strings /usr/bin/mfs (filtered unique line count) ===
+211

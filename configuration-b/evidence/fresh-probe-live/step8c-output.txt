@@ -1,0 +1,5 @@
+# Fresh probe, live session — Step 8c output (verbatim from user, 2026-11-19 13:34 IST)
+HTTP/1.1 200 OK, server uvicorn, date 08:04:01 GMT
+{"msg_out":"","msg_err":"Traceback (most recent call last):\n  File \"/root/dynamo_exec.py\", line 313, in _execute_python_impl\n  File \"<vmaas-py-session>\", line 5, in <module>\nAttributeError: 'Middleware' object has no attribute 'kwargs'\n","exit_status_int":1}
+# Session note: Starlette Middleware exposes .options, not .kwargs.
+# Calibration: the check failed on MY attribute name (.kwargs), not on the question. Side findings: server code is /root/dynamo_exec.py (_execute_python_impl line 313); exec scope is named "<vmaas-py-session>"; error path works (msg_err + exit 1). Fix in 8d: use m.options.

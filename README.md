@@ -10,6 +10,8 @@
 > Google engineered the sandbox. We audited the syscalls.<br>
 > Independent black-box systems verification of Google's Gemini Spark execution sandbox (`c_<session_id>`), with empirical measurements, bytecode inspection, and runtime telemetry extracted directly from inside the live workload cell.
 
+> **Two runtime configurations (2026-11-19):** The environment is provisioned in at least two distinct runtimes. This repository's baseline documents **Configuration A** (gVisor — Sentry + 9p Gofer + overlayfs). A second configuration, **Configuration B** (Cloud Hypervisor / KVM + Docker + XFS, not gVisor), was measured in a live session on 2026-11-19 and is documented in [`configuration-b/`](configuration-b/). Absolute statements below about the substrate, storage, and memory service describe Configuration A unless noted.
+
 ---
 
 ## Executive Summary
@@ -23,6 +25,8 @@ The architecture comprises five primary operational layers:
 3. **Execution Engine & IPC**: A PID 1 supervisor running an in-memory **FastAPI/Uvicorn** daemon (`dynamo_exec.py`) that drops privileges to unprivileged user `spark` (`UID 1235`), enforces localhost blocking via custom bytecode middleware, and maintains a stateful Python execution scope across tool invocations.
 4. **Visual & Document Synthesis Pipeline**: A 1440p **TigerVNC** virtual display hosting an `stterm`/`tmux` console, coupled with native `ffmpeg` (`x11grab`), `xdotool`, and a 314-family typography stack (full Noto CJK and Cairo/Pango vector libraries) tailored for multimodal document processing.
 5. **Cognitive State Plane**: A dedicated Google Runtime Environment (GRTE v5) FUSE daemon (**Jetski `mfs`**) connected via an air-gapped Unix domain socket to the host-side **Dumbo / Remy** memory service, implementing schemas for memory retrieval, snapshots, and background "Dreaming" consolidation routines.
+
+The substrate in layer 1 is Configuration A (gVisor). Configuration B replaces it with a Cloud Hypervisor microVM running a Docker container on a real Linux 6.12 kernel, with XFS-backed storage, no seccomp, no capability dropping, and a single AppArmor profile as its confinement control — see [`configuration-b/`](configuration-b/). The harness (PID 1 daemon, routes, `block_localhost` middleware) is unchanged across both configurations.
 
 ---
 
@@ -138,6 +142,9 @@ The dissection is organized across three primary tracks:
 * 📁 [**Part 3: The Mind — Cognitive Engine, Memory FUSE & the "Dream" Lifecycle API**](part3-the-mind/)
   The Jetski Memory FUSE subsystem (`mfs`), raw protobuf configuration (`config.txtpb`), demangled C++ symbol extraction (`learning::gemini::memory`), Dumbo/Remy IPC proxying over `/ipc/remy_memfs_proxy.sock`, the autonomous "Dream" consolidation cadence, and host-level `runsc exec` command injection mechanics.
 
+* 📁 [**Configuration B — Cloud Hypervisor / Docker Runtime (2026-11-19)**](configuration-b/)
+  A second runtime configuration measured in a live session on 2026-11-19: Cloud Hypervisor over KVM (Intel Xeon 6985P-C, 2 vCPU, 7.76 GiB), Docker container on a real Linux 6.12 kernel, XFS on `/dev/vdb`, loopback-only network, resolved device-mapper topology, an offline/conditionally provisioned `mfs`, a managed Chrome policy, and a lattice-Boltzmann capabilities check.
+
 ---
 
 ## Corrections Log
@@ -149,6 +156,7 @@ During the investigation, several initial observations were challenged, refined,
 3. **`memfd_create` Pointer Resolution**: An initial `EFAULT` (errno 14) result was recognized as a probe flaw (passing a NULL pointer). Re-probing with a valid string buffer (`ctypes.c_char_p(b"audit_test")`) succeeded, allocating file descriptor `4`.
 4. **Shared-Image Thesis Calibration**: The presence of `/usr/bin/entrypoint_browser.sh` initially suggested a unified dual-persona runtime. File existence audits proved `/usr/bin/dynamo_browser_wrapper.py` and the egress CA cert are absent; browser automation components are present, but the browser execution runtime is absent.
 5. **Persistence Scope**: Clarified that container root (`overlayfs`, `/tmp`) is ephemeral across recycles, whereas `/working_dir`, `/home/spark`, and `/mnt/agentdata` are persistent Plan 9 (`9p`) mounts.
+6. **Single-Substrate Framing (2026-11-19)**: Measurements from a live session on 2026-11-19 proved a second runtime configuration (Cloud Hypervisor / Docker + XFS) exists alongside the gVisor baseline. Absolute statements in this repository about the substrate (`gVisor`), `/tmp` (`overlayfs`), `fsync` (fails on `/working_dir`), and `/dev/shm` (`64 MB`) apply to Configuration A only. See [`configuration-b/`](configuration-b/).
 
 ---
 
@@ -194,6 +202,11 @@ During the investigation, several initial observations were challenged, refined,
         ├── mfs_config.txtpb             # Raw protobuf configuration for the Jetski FUSE daemon
         ├── mfs_debug.txt                # Diagnostic report, FUSE mount options, Buganizer ID
         └── mfs_symbols.txt              # 350+ demangled C++ symbols from learning::gemini::memory
+├── configuration-b/                     # Configuration B: Cloud Hypervisor / Docker (2026-11-19)
+│   ├── README.md                        # Two-configuration comparison, workload, policy, open items
+│   └── evidence/                        # Raw evidence for Configuration B
+│       ├── morning-bundle/              # Morning bundle: cage, machinery, mfs, OpenAPI, probes
+│       └── fresh-probe-live/            # Verbatim step outputs (steps 1–22)
 ```
 
 ---
@@ -208,6 +221,8 @@ All three primary architectural questions raised during the initial dissection h
    * *Finding*: While `/working_dir` serves as `$HOME` for tool subshells, `/home/spark` houses persistent profiles and clipboard integration (`.tmux.conf`, `xclip`) for the TigerVNC virtual desktop session, with its `.bashrc` delegating execution context to `/working_dir`.
 3. **The Sudo-Grant Rationale** — **[RESOLVED (§1.14)]**:
    * *Finding*: Deb822 repository auditing confirmed that the rootfs was constructed from an upstream Debian Bookworm snapshot frozen on September 18, 2026 (`20260918T000000Z`). Sudo delegation is an inherited build-time template artifact that remains completely inert in production due to device-level network isolation (`ENETUNREACH`).
+
+Configuration B (measured 2026-11-19) raises four new open items — the owner of listeners `12345`/`8080`, a Configuration A `nanosleep` distribution, the root cause of the headless Chromium hang, and a `file://` allowlist discrepancy — documented in [`configuration-b/README.md`](configuration-b/) §9.
 
 ---
 

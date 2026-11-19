@@ -1,0 +1,12 @@
+# Fresh probe, live session — Step 6 output (verbatim from user, 2026-11-19 13:22 IST)
+# xwininfo: root 0x51a, 1 child 0x200005 "tmux" 2244x1280+60+50 — IDENTICAL to v1 track2.
+# xdpyinfo: X.Org 1.21.1.6, vendor release 12101006, MIT-SHM present, 24 extensions incl VNC-EXTENSION.
+# RFB: banner 'RFB 003.008', security types [1, 1] (count=1, type=1 None) — matches v1 [1].
+# chromium EXISTS: /usr/bin/chromium; /etc/chromium.d/ has README, apikeys, default-flags, dev-shm, extensions (dated Oct 11 21:07).
+# dev-shm file VERBATIM (first capture): shm_avail=$(findmnt -bnr -o avail -T /dev/shm); if [ $shm_avail -lt 4080218931 ] # 3.8 GB → export --disable-dev-shm-usage.
+# findmnt avail /dev/shm = 2147483648 (2.0 GiB) < 4080218931 → flag IS injected on this container.
+# default-flags: --show-component-extension-options --enable-gpu-rasterization --no-default-browser-check --disable-pings --media-router=0.
+# extensions: --enable-remote-extensions + load /usr/share/chromium/extensions/*.
+# NOTE: apikeys file contains Debian-assigned Google API keys (public, assigned to Debian) — do NOT reproduce values in docs/replies.
+# Calibration: dev-shm wrapper + 3.8GB threshold now TIER 1 CONFIRMED (was unverified in Neon's §6). Threshold is on AVAILABLE space, not total size.
+# Still open: chromium GUI/headless behaviour (step 6b launch test).

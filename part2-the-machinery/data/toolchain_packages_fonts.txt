@@ -1,0 +1,69 @@
+# Configuration B — OS Image, APT Sources, Package Census, Toolchain & Fonts
+# Session Date: 2026-11-19 (session-scrubbed)
+
+=== /etc/os-release ===
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+VERSION_ID="12"
+VERSION_CODENAME=bookworm
+
+=== /etc/apt/sources.list.d/debian.sources ===
+Types: deb
+# http://snapshot.debian.org/archive/debian/20261027T000000Z
+URIs: http://deb.debian.org/debian
+Suites: bookworm bookworm-updates
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+Types: deb
+# http://snapshot.debian.org/archive/debian-security/20261027T000000Z
+URIs: http://deb.debian.org/debian-security
+Suites: bookworm-security
+Components: main
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+=== Package Census (total dpkg-query -W: 1314) ===
+    480 libs
+    387 javascript
+     90 python
+     52 perl
+     44 utils
+     40 admin
+     22 fonts
+     21 java
+     17 devel
+     16 x11
+     16 misc
+     14 libdevel
+     12 introspection
+     12 editors
+     10 text
+     10 database
+      9 web
+      9 tex
+      7 gnome
+      6 oldlibs
+
+=== Toolchain & Binary Versions ===
+Python 3.11.2 (159 pip packages)
+Node v18.20.4 / npm 9.2.0 (/opt/spark/lib/node_modules: pptxgenjs, sharp)
+gcc (Debian 12.2.0-14+deb12u1) 12.2.0 (g++ present; clang, sqlite3, ip, ss missing)
+ffmpeg version 5.1.9-0+deb12u1
+LibreOffice 7.4.7.2 40(Build:2)
+LuaHBTeX, Version 1.15.0 (TeX Live 2022/Debian)
+pdftoppm version 22.12.0
+Chromium 156.0.8078.73 built on Debian GNU/Linux 12 (bookworm)
+git, xdotool: present
+
+=== Key Python Packages ===
+beautifulsoup4 4.15.0 | fastapi 0.92.0 | httpx 0.23.3 | lxml 5.3.1 | Markdown 3.7
+markdown-it-py 4.0.0 | markdownify 1.2.3 | matplotlib 3.10.1 | numpy 2.1.3
+opencv-python 4.11.0.86 | openpyxl 3.1.5 | pandas 2.2.3 | pdfplumber 0.11.9
+pillow 11.1.0 | pydantic 1.10.4 | pypdf 6.21.4 | PyPDF2 3.0.1 | pypdfium2 5.14.0
+python-docx 1.1.2 | python-pptx 1.0.2 | reportlab 4.3.1 | requests 2.32.5
+scipy 1.15.2 | seaborn 0.13.2 | selenium 4.8.3 | starlette 0.26.1
+tabulate 0.9.0 | uvicorn 0.17.6 | xlsxwriter 3.2.9
+
+=== Locale, Timezone & Fonts ===
+LC_CTYPE=C.UTF-8 | Timezone: UTC +0000 (/usr/share/zoneinfo/Etc/UTC)
+fc-list :family | wc -l: 626
+/etc/fonts/fonts.conf and /etc/fonts/conf.d/ present; no FONT* env vars set

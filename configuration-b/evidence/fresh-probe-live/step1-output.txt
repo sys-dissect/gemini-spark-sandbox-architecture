@@ -1,0 +1,13 @@
+# Fresh probe, live session — Step 1 output (verbatim from user, 2026-11-19 12:42 IST)
+uname -a
+Linux ace 6.12.105+ #1 SMP Sat Sep 19 19:37:41 UTC 2026 x86_64 GNU/Linux
+cat /proc/uptime
+8446.77 16772.07
+cat /proc/mounts
+[identical to track1_virtio_xfs_cage.json mounts — overlay2 upperdir d88501491336079b7e34090c01f8eabdc6b3679369ef4959646534459f7a71d7, /dev/vdb xfs on /working_dir /usr/local /home/spark, /dev/shm size=2097152k, /tmp tmpfs, docker_snapshot on resolv.conf/hostname/hosts, CA cert overlays lowerdir=/mnt/lower]
+df -h /dev/shm
+shm 2.0G 0 2.0G 0% /dev/shm
+df -h /tmp /working_dir
+tmpfs 3.9G 4.8M 3.9G 1% /tmp
+/dev/vdb 19G 394M 18G 3% /working_dir
+# Calibration: Variant B CONFIRMED, same container instance as v1 bundle (identical overlay upperdir hash). Uptime 8446.77s = 2h20m46s; v1 bundle uptime was 231.71s → same boot, ~10:21 IST. NEW vs v1: /tmp tmpfs is 3.9G; /dev/vdb is 19G with 394M used.

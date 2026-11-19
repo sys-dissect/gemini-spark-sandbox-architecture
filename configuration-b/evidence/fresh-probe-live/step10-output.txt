@@ -1,0 +1,10 @@
+# Fresh probe phase 2 — Step 10 output (verbatim from user, 2026-11-19 13:49 IST)
+# SUID find skipped by Neon (out of scope).
+CapEff []
+CapBnd [ALL 41: CHOWN DAC_OVERRIDE DAC_READ_SEARCH FOWNER FSETID KILL SETGID SETUID SETPCAP LINUX_IMMUTABLE NET_BIND_SERVICE NET_BROADCAST NET_ADMIN NET_RAW IPC_LOCK IPC_OWNER SYS_MODULE SYS_RAWIO SYS_CHROOT SYS_PTRACE SYS_PACCT SYS_ADMIN SYS_BOOT SYS_NICE SYS_RESOURCE SYS_TIME SYS_TTY_CONFIG MKNOD LEASE AUDIT_WRITE AUDIT_CONTROL SETFCAP MAC_OVERRIDE MAC_ADMIN SYSLOG WAKE_ALARM BLOCK_SUSPEND AUDIT_READ PERFMON BPF CHECKPOINT_RESTORE]
+CapInh 0, CapAmb 0, NoNewPrivs 0, Seccomp 0
+uid_map: 0 0 4294967295
+gid_map: 0 0 4294967295
+AppArmor profiles file: No such file or directory
+/proc/self/attr/current: ace-workload (enforce)
+# Calibration: CapEff empty is normal (agent runs as UID 1235). CapBnd = ALL 41 = NO capability dropping (Docker default drops ~27; this keeps SYS_ADMIN, SYS_MODULE, SYS_PTRACE, SYS_BOOT, NET_ADMIN, BPF, PERFMON, SYS_RAWIO). Seccomp 0 = NO syscall filter (Docker default blocks ~44). uid_map identity = NO userns remapping (container UID 0 = host UID 0). NoNewPrivs 0. The ONE confinement control observed: custom AppArmor profile "ace-workload" in enforce mode (profiles file not visible from inside). So: namespaces + cgroups + one AppArmor profile; no seccomp, no cap drop, no userns. The missing controls only matter if a path to root exists (SUID enumeration refused).

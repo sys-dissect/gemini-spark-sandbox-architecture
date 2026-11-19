@@ -1,0 +1,5 @@
+# Fresh probe, live session — Step 8b output (verbatim from user, 2026-11-19 13:32 IST)
+HTTP/1.1 200 OK, server: uvicorn, date Thu 19 Nov 2026 08:02:41 GMT (= 13:32 IST ✓)
+{"msg_out":"['FastAPI']\n['CORSMiddleware', 'BaseHTTPMiddleware']\n","msg_err":"","exit_status_int":0}
+# Calibration: in-process introspection works via /execute_python (msg_out schema reconfirmed live). One FastAPI app; middleware stack = CORSMiddleware + BaseHTTPMiddleware.
+# BaseHTTPMiddleware is consistent with block_localhost (registered as dispatch fn) but does not by itself prove the function name — the dispatch name check (step 8c) closes it. v1 disassembly already proved the function in this same container (morning session).

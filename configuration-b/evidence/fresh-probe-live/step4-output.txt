@@ -1,0 +1,8 @@
+# Fresh probe, live session — Step 4 output (verbatim from user, 2026-11-19 13:01 IST)
+CLOCK_REALTIME rc=0 sec=0 nsec=1
+CLOCK_MONOTONIC rc=0 sec=0 nsec=1
+CLOCK_BOOTTIME rc=0 sec=0 nsec=1
+nanosleep 500us x20: mean 565.40 median 564.64 min 559.74 max 573.79 us
+prctl dumpable: -1
+# Notes from the session: prctl(4) is PR_SET_DUMPABLE, not PR_GET_DUMPABLE (3) — my bug, hence -1. Grandchild print lost: buffered stdout + os._exit(0) without flush — my bug. Fix in step 4b: prctl(3), python3 -u + flush=True.
+# Calibration: clocks identical to v1 (rc 0, 1ns res). nanosleep FIRST multi-sample reading: mean 565.40, median 564.64, range 559.74-573.79 — tight (~14us spread), consistent with v1 single sample 571.86 (near the max). Timer figure now confirmed stable, not a one-off.
